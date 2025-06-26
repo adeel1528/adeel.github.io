@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Basic animation for card hover */
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for the audio player */
+        audio {
+            width: 100%;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            padding: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div id="app" class="bg-white rounded-xl shadow-lg p-6 md:p-8 w-full max-w-4xl border border-gray-200">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Lecture Portal</h1>
+
+        <!-- Navigation/Breadcrumbs -->
+        <div class="mb-6 text-gray-600">
+            <span id="breadcrumb-home" class="cursor-pointer hover:text-blue-600 transition duration-300">Home</span>
+            <span id="breadcrumb-class" class="hidden"> / <span class="cursor-pointer hover:text-blue-600 transition duration-300"></span></span>
+            <span id="breadcrumb-teacher" class="hidden"> / <span class="cursor-pointer hover:text-blue-600 transition duration-300"></span></span>
+        </div>
+
+        <!-- Instructions for URL -->
+        <div id="url-instruction" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-md">
+            <p class="font-bold">Important: Configure Google Apps Script URL</p>
+            <p class="text-sm">Please replace <code class="bg-yellow-200 px-1 rounded-sm">'YOUR_WEB_APP_URL_HERE'</code> in the HTML file's JavaScript with the deployed URL of your Google Apps Script. This step is crucial for the app to fetch data.</p>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" class="text-center py-8 text-gray-600">
+            <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p>Loading data from Google Sheet...</p>
+        </div>
+
+
+        <!-- Error Message -->
+        <div id="error-message" class="hidden text-center py-8 text-red-600">
+            <p class="font-bold">Error loading data.</p>
+            <p>Please ensure the Google Apps Script is deployed correctly, and you have updated the <code class="bg-red-100 px-1 rounded-sm">GOOGLE_APPS_SCRIPT_URL</code> in the HTML file's JavaScript section with the correct deployed URL.</p>
+        </div>
+
+        <!-- Section for Classes -->
+        <div id="classes-section" class="hidden">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Classes</h2>
+            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Classes will be rendered here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Section for Teachers (hidden initially) -->
+        <div id="teachers-section" class="hidden">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Teachers for <span id="current-class-name" class="text-blue-600"></span></h2>
+            <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Teachers will be rendered here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Section for Lectures (hidden initially) -->
+        <div id="lectures-section" class="hidden">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Lectures by <span id="current-teacher-name" class="text-blue-600"></span></h2>
+            <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Lectures will be rendered here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Lecture View Modal (hidden initially) -->
+        <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white rounded-xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform transition-all scale-95 opacity-0 duration-300 ease-out">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="lecture-modal-title" class="text-2xl font-bold text-gray-800"></h3>
+                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
+                </div>
+                <div class="mb-4">
+                    <p class="text-gray-700 mb-2">Lecture Audio:</p>
+                    <audio id="lecture-audio-player" controls preload="metadata">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-blue-600 text-white px-5 py-3 rounded-lg text-center font-semibold hover:bg-blue-700 transition duration-300 shadow-md">
+                        View Lecture Content
+                    </a>
+                    <a id="lecture-download-link" href="#" download class="flex-1 bg-green-600 text-white px-5 py-3 rounded-lg text-center font-semibold hover:bg-green-700 transition duration-300 shadow-md">
+                        Download Lecture
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // !! IMPORTANT: Replace this with the deployed Google Apps Script Web App URL !!
+        // Example: 'https://script.google.com/macros/s/AKfyc.../exec'
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRDqBREUsmhFkGZHVQkaRqwsrT8VxiRqCYapG1Ss6CPcbKyD3nKbc1OQP9x3qlPmsF/exec'; 
+
+        let lecturePortalData = []; // This will store the data fetched from Google Sheet
+
+        // Get DOM elements
+        const classesSection = document.getElementById('classes-section');
+        const classesContainer = document.getElementById('classes-container');
+        const teachersSection = document.getElementById('teachers-section');
+        const teachersContainer = document.getElementById('teachers-container');
+        const currentClassName = document.getElementById('current-class-name');
+        const lecturesSection = document.getElementById('lectures-section');
+        const lecturesContainer = document.getElementById('lectures-container');
+        const currentTeacherName = document.getElementById('current-teacher-name');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const errorMessage = document.getElementById('error-message');
+        const urlInstruction = document.getElementById('url-instruction');
+
+        const lectureViewModal = document.getElementById('lecture-view-modal');
+        const lectureModalTitle = document.getElementById('lecture-modal-title');
+        const lectureAudioPlayer = document.getElementById('lecture-audio-player');
+        const lectureViewLink = document.getElementById('lecture-view-link');
+        const lectureDownloadLink = document.getElementById('lecture-download-link');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        const breadcrumbHome = document.getElementById('breadcrumb-home');
+        const breadcrumbClass = document.getElementById('breadcrumb-class');
+        const breadcrumbTeacher = document.getElementById('breadcrumb-teacher');
+
+        let currentClass = null;
+        let currentTeacher = null;
+
+        /**
+         * Fetches data from the Google Apps Script web app.
+         * @returns {Promise<Array>} A promise that resolves with the processed lecture portal data.
+         */
+        async function fetchDataFromGoogleSheet() {
+            loadingIndicator.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            urlInstruction.classList.add('hidden'); // Hide instruction once fetch starts
+
+            try {
+                if (GOOGLE_APPS_SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE' || !GOOGLE_APPS_SCRIPT_URL) {
+                    // Show the instruction if URL is not set, and stop execution
+                    urlInstruction.classList.remove('hidden');
+                    loadingIndicator.classList.add('hidden');
+                    return [];
+                }
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const rawData = await response.json();
+                console.log("Raw data from Google Sheet:", rawData);
+
+                // Process raw data into the desired structure
+                return processSheetData(rawData);
+
+            } catch (error) {
+                console.error('Failed to fetch or process data from Google Sheet:', error);
+                loadingIndicator.classList.add('hidden');
+                errorMessage.classList.remove('hidden');
+                return []; // Return empty array on error
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Processes the raw data from Google Sheet into a structured format for the app.
+         * @param {Object} rawData - Object containing arrays for Classes, Teachers, and Lectures.
+         * @returns {Array} Structured lecture portal data.
+         */
+        function processSheetData(rawData) {
+            const classesMap = new Map();
+            const teachersMap = new Map();
+
+            // Populate Classes Map
+            rawData.classes.forEach(cls => {
+                classesMap.set(cls.id, {
+                    id: cls.id,
+                    name: cls.name,
+                    teachers: []
+                });
+            });
+
+            // Populate Teachers Map and link to Classes
+            rawData.teachers.forEach(teacher => {
+                const classObj = classesMap.get(teacher.classId);
+                if (classObj) {
+                    const teacherObj = {
+                        id: teacher.id,
+                        name: teacher.name,
+                        picture: teacher.picture || 'https://placehold.co/100x100/cccccc/333333?text=N/A', // Placeholder if no picture
+                        lectures: []
+                    };
+                    teachersMap.set(teacher.id, teacherObj);
+                    classObj.teachers.push(teacherObj);
+                } else {
+                    console.warn(`Teacher ${teacher.name} references non-existent Class ID: ${teacher.classId}`);
+                }
+            });
+
+            // Link Lectures to Teachers
+            rawData.lectures.forEach(lecture => {
+                const teacherObj = teachersMap.get(lecture.teacherId);
+                if (teacherObj) {
+                    teacherObj.lectures.push({
+                        id: lecture.id,
+                        number: parseInt(lecture.number) || 0, // Ensure number is integer
+                        title: lecture.title,
+                        contentUrl: lecture.contentUrl,
+                        downloadUrl: lecture.downloadUrl,
+                        audioUrl: lecture.audioUrl
+                    });
+                } else {
+                    console.warn(`Lecture ${lecture.title} references non-existent Teacher ID: ${lecture.teacherId}`);
+                }
+            });
+
+            // Sort lectures by number for consistent display
+            teachersMap.forEach(teacher => {
+                teacher.lectures.sort((a, b) => a.number - b.number);
+            });
+
+            return Array.from(classesMap.values());
+        }
+
+        /**
+         * Renders the list of classes.
+         */
+        function renderClasses() {
+            classesContainer.innerHTML = ''; // Clear previous content
+            if (lecturePortalData.length === 0) {
+                classesContainer.innerHTML = '<p class="text-gray-600 text-center col-span-full">No classes available.</p>';
+            } else {
+                lecturePortalData.forEach(cls => {
+                    const classCard = `
+                        <div class="bg-blue-100 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out cursor-pointer card-hover border border-blue-200" data-class-id="${cls.id}">
+                            <h3 class="text-xl font-semibold text-blue-800 mb-2">${cls.name}</h3>
+                            <p class="text-blue-700">${cls.teachers.length} Teachers</p>
+                        </div>
+                    `;
+                    classesContainer.innerHTML += classCard;
+                });
+
+                // Add event listeners to class cards
+                document.querySelectorAll('#classes-container > div').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const classId = e.currentTarget.dataset.classId;
+                        currentClass = lecturePortalData.find(cls => cls.id === classId);
+                        renderTeachers(currentClass);
+                    });
+                });
+            }
+
+
+            // Update UI visibility
+            classesSection.classList.remove('hidden');
+            teachersSection.classList.add('hidden');
+            lecturesSection.classList.add('hidden');
+            lectureViewModal.classList.add('hidden');
+            hideModalImmediately(); // Ensure modal is fully hidden
+
+            // Update breadcrumbs
+            breadcrumbHome.classList.remove('hidden');
+            breadcrumbClass.classList.add('hidden');
+            breadcrumbTeacher.classList.add('hidden');
+        }
+
+        /**
+         * Renders the list of teachers for a given class.
+         * @param {Object} cls - The class object.
+         */
+        function renderTeachers(cls) {
+            teachersContainer.innerHTML = ''; // Clear previous content
+            currentClassName.textContent = cls.name;
+
+            if (cls.teachers.length === 0) {
+                teachersContainer.innerHTML = '<p class="text-gray-600 text-center col-span-full">No teachers available for this class yet.</p>';
+            } else {
+                cls.teachers.forEach(teacher => {
+                    const teacherCard = `
+                        <div class="bg-green-100 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out cursor-pointer flex flex-col items-center text-center card-hover border border-green-200" data-teacher-id="${teacher.id}">
+                            <img src="${teacher.picture}" alt="${teacher.name}" class="w-20 h-20 rounded-full object-cover mb-3 border-2 border-green-400 shadow-sm" onerror="this.onerror=null;this.src='https://placehold.co/100x100/cccccc/333333?text=N/A';">
+                            <h3 class="text-xl font-semibold text-green-800 mb-1">${teacher.name}</h3>
+                            <p class="text-green-700">${teacher.lectures.length} Lectures</p>
+                        </div>
+                    `;
+                    teachersContainer.innerHTML += teacherCard;
+                });
+
+                // Add event listeners to teacher cards
+                document.querySelectorAll('#teachers-container > div').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const teacherId = e.currentTarget.dataset.teacherId;
+                        currentTeacher = cls.teachers.find(t => t.id === teacherId);
+                        renderLectures(currentTeacher);
+                    });
+                });
+            }
+
+            // Update UI visibility
+            classesSection.classList.add('hidden');
+            teachersSection.classList.remove('hidden');
+            lecturesSection.classList.add('hidden');
+            lectureViewModal.classList.add('hidden');
+            hideModalImmediately(); // Ensure modal is fully hidden
+
+            // Update breadcrumbs
+            breadcrumbHome.classList.remove('hidden');
+            breadcrumbClass.classList.remove('hidden');
+            breadcrumbClass.querySelector('span').textContent = cls.name;
+            breadcrumbTeacher.classList.add('hidden');
+        }
+
+        /**
+         * Renders the list of lectures for a given teacher.
+         * @param {Object} teacher - The teacher object.
+         */
+        function renderLectures(teacher) {
+            lecturesContainer.innerHTML = ''; // Clear previous content
+            currentTeacherName.textContent = teacher.name;
+
+            if (teacher.lectures.length === 0) {
+                lecturesContainer.innerHTML = '<p class="text-gray-600 text-center col-span-full">No lectures available for this teacher yet.</p>';
+            } else {
+                teacher.lectures.forEach(lecture => {
+                    const lectureCard = `
+                        <div class="bg-yellow-100 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out cursor-pointer flex flex-col card-hover border border-yellow-200" data-lecture-id="${lecture.id}">
+                            <h3 class="text-xl font-semibold text-yellow-800 mb-2">Lecture ${lecture.number}: ${lecture.title}</h3>
+                            <div class="mt-auto flex justify-end gap-2">
+                                <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition duration-300 shadow-sm view-lecture-btn">View</button>
+                            </div>
+                        </div>
+                    `;
+                    lecturesContainer.innerHTML += lectureCard;
+                });
+
+                // Add event listeners to lecture cards
+                document.querySelectorAll('.view-lecture-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent card click from propagating
+                        const lectureId = e.currentTarget.closest('[data-lecture-id]').dataset.lectureId;
+                        const selectedLecture = teacher.lectures.find(lec => lec.id === lectureId);
+                        showLectureModal(selectedLecture);
+                    });
+                });
+            }
+
+            // Update UI visibility
+            classesSection.classList.add('hidden');
+            teachersSection.classList.add('hidden');
+            lecturesSection.classList.remove('hidden');
+            lectureViewModal.classList.add('hidden');
+            hideModalImmediately(); // Ensure modal is fully hidden
+
+            // Update breadcrumbs
+            breadcrumbHome.classList.remove('hidden');
+            breadcrumbClass.classList.remove('hidden');
+            breadcrumbTeacher.classList.remove('hidden');
+            breadcrumbTeacher.querySelector('span').textContent = teacher.name;
+        }
+
+        /**
+         * Displays the lecture modal with content and audio player.
+         * @param {Object} lecture - The lecture object.
+         */
+        function showLectureModal(lecture) {
+            lectureModalTitle.textContent = lecture.title;
+            lectureAudioPlayer.src = lecture.audioUrl;
+            lectureAudioPlayer.load(); // Load the audio
+            lectureAudioPlayer.pause(); // Pause any currently playing audio
+
+            lectureViewLink.href = lecture.contentUrl;
+            lectureDownloadLink.href = lecture.downloadUrl;
+            lectureDownloadLink.download = `${lecture.title}.pdf`; // Suggest a filename for download
+
+            lectureViewModal.classList.remove('hidden');
+            // Animate modal in
+            setTimeout(() => {
+                lectureViewModal.querySelector('div').classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        /**
+         * Hides the lecture modal.
+         */
+        function hideLectureModal() {
+            lectureAudioPlayer.pause(); // Stop audio when closing modal
+            lectureViewModal.querySelector('div').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                lectureViewModal.classList.add('hidden');
+            }, 300); // Allow animation to finish
+        }
+
+        // Helper to hide modal immediately without transition
+        function hideModalImmediately() {
+            lectureAudioPlayer.pause();
+            lectureViewModal.classList.add('hidden');
+            lectureViewModal.querySelector('div').classList.add('scale-95', 'opacity-0');
+        }
+
+        // Event listeners for modal
+        closeModalBtn.addEventListener('click', hideLectureModal);
+        lectureViewModal.addEventListener('click', (e) => {
+            if (e.target === lectureViewModal) { // Close if clicked outside the modal content
+                hideLectureModal();
+            }
+        });
+
+        // Breadcrumb Navigation
+        breadcrumbHome.addEventListener('click', renderClasses);
+        breadcrumbClass.querySelector('span').addEventListener('click', () => {
+            if (currentClass) {
+                renderTeachers(currentClass);
+            }
+        });
+        breadcrumbTeacher.querySelector('span').addEventListener('click', () => {
+            if (currentTeacher) {
+                renderLectures(currentTeacher);
+            }
+        });
+
+        // Initialize the app by fetching data and then rendering classes
+        document.addEventListener('DOMContentLoaded', async () => {
+            lecturePortalData = await fetchDataFromGoogleSheet();
+            if (lecturePortalData.length === 0) {
+                // If no data loaded (e.g., due to URL not being set), show instruction
+                urlInstruction.classList.remove('hidden');
+            } else {
+                renderClasses();
+            }
+        });
+    </script>
+</body>
+</html>
