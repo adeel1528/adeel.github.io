@@ -10,115 +10,156 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5; /* Light gray background */
+            background-color: #1e293b; /* Dark blue background - Slate 900 */
+            /* Subtle grid pattern */
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px; /* Adjust grid size */
         }
         /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #e0e0e0;
+            background: #475569; /* Darker track - Slate 600 */
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-            background: #888;
+            background: #64748b; /* Medium gray thumb - Slate 500 */
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #94a3b8; /* Lighter gray on hover - Slate 400 */
         }
 
-        /* Basic animation for card hover */
+        /* Enhanced animation for card hover */
+        .card-hover {
+            transition: all 0.3s ease-in-out;
+        }
         .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px) scale(1.02); /* More pronounced lift and slight scale */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* Stronger shadow for dark theme */
+            filter: brightness(1.1); /* Slightly brighter on hover */
         }
 
         /* Styling for the audio player */
         audio {
             width: 100%;
+            border-radius: 10px;
+            background-color: #334155; /* Slate 700 for audio player background */
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            outline: none; /* Remove default focus outline */
+        }
+        audio::-webkit-media-controls-panel {
+            background-color: #475569; /* Slate 600 for control panel */
             border-radius: 8px;
-            background-color: #f9fafb;
-            padding: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        audio::-webkit-media-controls-play-button {
+            color: #f59e0b; /* Amber 500 for play button */
+        }
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            color: #cbd5e1; /* Light text color */
+        }
+        audio::-webkit-media-controls-timeline {
+            background-color: #64748b; /* Slate 500 for timeline background */
+            border-radius: 5px;
+        }
+        audio::-webkit-media-controls-volume-slider {
+            background-color: #94a3b8; /* Slate 400 for volume slider background */
+            border-radius: 5px;
+        }
+
+        /* Custom glow for main app container */
+        #app {
+            box-shadow: 0 0 20px rgba(252, 211, 77, 0.4), /* Amber 300 glow */
+                        0 10px 20px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
-    <div id="app" class="bg-white rounded-xl shadow-lg p-6 md:p-8 w-full max-w-4xl border border-gray-200">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Lecture Portal</h1>
+    <div id="app" class="bg-slate-800 rounded-2xl p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out">
+        <h1 class="text-4xl font-extrabold text-center mb-8 text-white">Lecture Portal</h1>
 
         <!-- Navigation/Breadcrumbs -->
-        <div class="mb-6 text-gray-600">
-            <span id="breadcrumb-home" class="cursor-pointer hover:text-blue-600 transition duration-300">Home</span>
-            <span id="breadcrumb-class" class="hidden"> / <span class="cursor-pointer hover:text-blue-600 transition duration-300"></span></span>
-            <span id="breadcrumb-teacher" class="hidden"> / <span class="cursor-pointer hover:text-blue-600 transition duration-300"></span></span>
+        <div class="mb-8 text-slate-300 text-lg flex items-center justify-center">
+            <span id="breadcrumb-home" class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-700 hover:bg-slate-600">Home</span>
+            <span id="breadcrumb-class" class="hidden"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-700 hover:bg-slate-600"></span></span>
+            <span id="breadcrumb-teacher" class="hidden"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-700 hover:bg-slate-600"></span></span>
         </div>
 
         <!-- Instructions for URL -->
-        <div id="url-instruction" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-md">
-            <p class="font-bold">Important: Configure Google Apps Script URL</p>
-            <p class="text-sm">Please replace <code class="bg-yellow-200 px-1 rounded-sm">'YOUR_WEB_APP_URL_HERE'</code> in the HTML file's JavaScript with the deployed URL of your Google Apps Script. This step is crucial for the app to fetch data.</p>
+        <div id="url-instruction" class="bg-amber-100 border-l-4 border-amber-500 text-amber-900 p-4 mb-6 rounded-lg shadow-md">
+            <p class="font-bold text-lg">Important: Configure Google Apps Script URL!</p>
+            <p class="text-base mt-1">Please replace <code class="bg-amber-200 px-1 rounded-md text-amber-900 font-mono">GOOGLE_APPS_SCRIPT_URL</code> in the JavaScript section of this HTML file with the **actual deployed URL** of your Google Apps Script Web App. This step is crucial for the app to fetch dynamic data from your Google Sheet.</p>
         </div>
 
         <!-- Loading Indicator -->
-        <div id="loading-indicator" class="text-center py-8 text-gray-600">
-            <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <div id="loading-indicator" class="text-center py-10 text-slate-300">
+            <svg class="animate-spin h-10 w-10 text-amber-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p>Loading data from Google Sheet...</p>
+            <p class="text-lg font-medium">Loading dynamic data from Google Sheet...</p>
         </div>
 
 
         <!-- Error Message -->
-        <div id="error-message" class="hidden text-center py-8 text-red-600">
-            <p class="font-bold">Error loading data.</p>
-            <p>Please ensure the Google Apps Script is deployed correctly, and you have updated the <code class="bg-red-100 px-1 rounded-sm">GOOGLE_APPS_SCRIPT_URL</code> in the HTML file's JavaScript section with the correct deployed URL.</p>
+        <div id="error-message" class="hidden text-center py-10 text-red-400 bg-red-900 bg-opacity-30 border-l-4 border-red-700 p-6 rounded-lg shadow-md">
+            <p class="font-bold text-xl mb-2">Error loading data!</p>
+            <p class="text-base">It seems there was a problem fetching information. Please ensure:</p>
+            <ul class="list-disc list-inside text-left mx-auto max-w-sm mt-3">
+                <li>The Google Apps Script is correctly deployed as a "Web App" with "Anyone" access.</li>
+                <li>The <code class="bg-red-800 px-1 rounded-sm font-mono text-red-200">GOOGLE_APPS_SCRIPT_URL</code> in this HTML file is updated with the correct deployed URL.</li>
+                <li>Your Google Sheet names (`Classes`, `Teachers`, `Lectures`) and column headers are exactly as specified.</li>
+            </ul>
+            <p class="text-sm mt-4">For more details, check your browser's console (F12).</p>
         </div>
 
         <!-- Section for Classes -->
         <div id="classes-section" class="hidden">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Classes</h2>
-            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Classes</h2>
+            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Classes will be rendered here by JavaScript -->
             </div>
         </div>
 
         <!-- Section for Teachers (hidden initially) -->
         <div id="teachers-section" class="hidden">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Teachers for <span id="current-class-name" class="text-blue-600"></span></h2>
-            <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Teachers for <span id="current-class-name" class="text-amber-400 font-bold"></span></h2>
+            <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Teachers will be rendered here by JavaScript -->
             </div>
         </div>
 
         <!-- Section for Lectures (hidden initially) -->
         <div id="lectures-section" class="hidden">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Lectures by <span id="current-teacher-name" class="text-blue-600"></span></h2>
-            <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Lectures by <span id="current-teacher-name" class="text-amber-400 font-bold"></span></h2>
+            <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Lectures will be rendered here by JavaScript -->
             </div>
         </div>
 
         <!-- Lecture View Modal (hidden initially) -->
-        <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
-            <div class="bg-white rounded-xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform transition-all scale-95 opacity-0 duration-300 ease-out">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 id="lecture-modal-title" class="text-2xl font-bold text-gray-800"></h3>
-                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
+        <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50 transition-opacity duration-300 ease-out">
+            <div class="bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-90 opacity-0 transition-all duration-300 ease-out border border-amber-300">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
+                    <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
                 </div>
-                <div class="mb-4">
-                    <p class="text-gray-700 mb-2">Lecture Audio:</p>
+                <div class="mb-5">
+                    <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
                     <audio id="lecture-audio-player" controls preload="metadata">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-blue-600 text-white px-5 py-3 rounded-lg text-center font-semibold hover:bg-blue-700 transition duration-300 shadow-md">
+                    <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">
                         View Lecture Content
                     </a>
-                    <a id="lecture-download-link" href="#" download class="flex-1 bg-green-600 text-white px-5 py-3 rounded-lg text-center font-semibold hover:bg-green-700 transition duration-300 shadow-md">
+                    <a id="lecture-download-link" href="#" download class="flex-1 bg-amber-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">
                         Download Lecture
                     </a>
                 </div>
@@ -129,7 +170,7 @@
     <script>
         // !! IMPORTANT: Replace this with the deployed Google Apps Script Web App URL !!
         // Example: 'https://script.google.com/macros/s/AKfyc.../exec'
-        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRDqBREUsmhFkGZHVQkaRqwsrT8VxiRqCYapG1Ss6CPcbKyD3nKbc1OQP9x3qlPmsF/exec'; 
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRDqBREUsmhFkGZHVQkaRqwsrT8VxiRqCYapG1Ss6CPcbKyD3nKbc1OQP9x3qlPmsF/exec'; // **PLEASE REPLACE THIS WITH YOUR ACTUAL URL**
 
         let lecturePortalData = []; // This will store the data fetched from Google Sheet
 
@@ -170,8 +211,10 @@
             urlInstruction.classList.add('hidden'); // Hide instruction once fetch starts
 
             try {
-                if (GOOGLE_APPS_SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE' || !GOOGLE_APPS_SCRIPT_URL) {
-                    // Show the instruction if URL is not set, and stop execution
+                // Check if the URL is still the placeholder.
+                // Replace this with a check against your actual valid URL, or ensure the user always replaces it.
+                if (GOOGLE_APPS_SCRIPT_URL.includes('_TEST_APP_URL_FOR_DEMO_ONLY_DO_NOT_USE_THIS') || !GOOGLE_APPS_SCRIPT_URL.startsWith('https://script.google.com/macros/s/')) {
+                    // Show the instruction if URL is not set or is still the placeholder, and stop execution
                     urlInstruction.classList.remove('hidden');
                     loadingIndicator.classList.add('hidden');
                     return [];
@@ -221,7 +264,7 @@
                     const teacherObj = {
                         id: teacher.id,
                         name: teacher.name,
-                        picture: teacher.picture || 'https://placehold.co/100x100/cccccc/333333?text=N/A', // Placeholder if no picture
+                        picture: teacher.picture || 'https://placehold.co/100x100/475569/cbd5e1?text=N/A', // Updated placeholder color for dark theme
                         lectures: []
                     };
                     teachersMap.set(teacher.id, teacherObj);
@@ -262,13 +305,16 @@
         function renderClasses() {
             classesContainer.innerHTML = ''; // Clear previous content
             if (lecturePortalData.length === 0) {
-                classesContainer.innerHTML = '<p class="text-gray-600 text-center col-span-full">No classes available.</p>';
+                classesContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No classes available.</p>';
             } else {
                 lecturePortalData.forEach(cls => {
                     const classCard = `
-                        <div class="bg-blue-100 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out cursor-pointer card-hover border border-blue-200" data-class-id="${cls.id}">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">${cls.name}</h3>
-                            <p class="text-blue-700">${cls.teachers.length} Teachers</p>
+                        <div class="bg-slate-700 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-600" data-class-id="${cls.id}">
+                            <div>
+                                <h3 class="text-white text-xl font-semibold mb-2">${cls.name}</h3>
+                                <p class="text-slate-300 text-sm">${cls.teachers.length} Teachers</p>
+                            </div>
+                            <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">View Teachers</button>
                         </div>
                     `;
                     classesContainer.innerHTML += classCard;
@@ -276,8 +322,9 @@
 
                 // Add event listeners to class cards
                 document.querySelectorAll('#classes-container > div').forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        const classId = e.currentTarget.dataset.classId;
+                    card.querySelector('button').addEventListener('click', (e) => { // Attach to button
+                        e.stopPropagation(); // Prevent card click from propagating
+                        const classId = e.currentTarget.closest('[data-class-id]').dataset.classId;
                         currentClass = lecturePortalData.find(cls => cls.id === classId);
                         renderTeachers(currentClass);
                     });
@@ -307,14 +354,15 @@
             currentClassName.textContent = cls.name;
 
             if (cls.teachers.length === 0) {
-                teachersContainer.innerHTML = '<p class="text-gray-600 text-center col-span-full">No teachers available for this class yet.</p>';
+                teachersContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No teachers available for this class yet.</p>';
             } else {
                 cls.teachers.forEach(teacher => {
                     const teacherCard = `
-                        <div class="bg-green-100 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out cursor-pointer flex flex-col items-center text-center card-hover border border-green-200" data-teacher-id="${teacher.id}">
-                            <img src="${teacher.picture}" alt="${teacher.name}" class="w-20 h-20 rounded-full object-cover mb-3 border-2 border-green-400 shadow-sm" onerror="this.onerror=null;this.src='https://placehold.co/100x100/cccccc/333333?text=N/A';">
-                            <h3 class="text-xl font-semibold text-green-800 mb-1">${teacher.name}</h3>
-                            <p class="text-green-700">${teacher.lectures.length} Lectures</p>
+                        <div class="bg-slate-700 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col items-center text-center card-hover border border-slate-600" data-teacher-id="${teacher.id}">
+                            <img src="${teacher.picture}" alt="${teacher.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400 shadow-md transform transition-transform duration-200 hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A';">
+                            <h3 class="text-white text-xl font-semibold mb-1">${teacher.name}</h3>
+                            <p class="text-slate-300 text-sm">${teacher.lectures.length} Lectures</p>
+                            <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">View Lectures</button>
                         </div>
                     `;
                     teachersContainer.innerHTML += teacherCard;
@@ -322,8 +370,9 @@
 
                 // Add event listeners to teacher cards
                 document.querySelectorAll('#teachers-container > div').forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        const teacherId = e.currentTarget.dataset.teacherId;
+                    card.querySelector('button').addEventListener('click', (e) => { // Attach to button
+                        e.stopPropagation(); // Prevent card click from propagating
+                        const teacherId = e.currentTarget.closest('[data-teacher-id]').dataset.teacherId;
                         currentTeacher = cls.teachers.find(t => t.id === teacherId);
                         renderLectures(currentTeacher);
                     });
@@ -353,15 +402,15 @@
             currentTeacherName.textContent = teacher.name;
 
             if (teacher.lectures.length === 0) {
-                lecturesContainer.innerHTML = '<p class="text-gray-600 text-center col-span-full">No lectures available for this teacher yet.</p>';
+                lecturesContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No lectures available for this teacher yet.</p>';
             } else {
                 teacher.lectures.forEach(lecture => {
                     const lectureCard = `
-                        <div class="bg-yellow-100 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out cursor-pointer flex flex-col card-hover border border-yellow-200" data-lecture-id="${lecture.id}">
-                            <h3 class="text-xl font-semibold text-yellow-800 mb-2">Lecture ${lecture.number}: ${lecture.title}</h3>
-                            <div class="mt-auto flex justify-end gap-2">
-                                <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition duration-300 shadow-sm view-lecture-btn">View</button>
+                        <div class="bg-slate-700 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-600" data-lecture-id="${lecture.id}">
+                            <div>
+                                <h3 class="text-white text-xl font-semibold mb-2">Lecture ${lecture.number}: ${lecture.title}</h3>
                             </div>
+                            <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95 view-lecture-btn">View Lecture</button>
                         </div>
                     `;
                     lecturesContainer.innerHTML += lectureCard;
@@ -409,7 +458,8 @@
             lectureViewModal.classList.remove('hidden');
             // Animate modal in
             setTimeout(() => {
-                lectureViewModal.querySelector('div').classList.remove('scale-95', 'opacity-0');
+                lectureViewModal.querySelector('div').classList.remove('scale-90', 'opacity-0');
+                lectureViewModal.querySelector('div').classList.add('scale-100', 'opacity-100');
             }, 10);
         }
 
@@ -418,7 +468,8 @@
          */
         function hideLectureModal() {
             lectureAudioPlayer.pause(); // Stop audio when closing modal
-            lectureViewModal.querySelector('div').classList.add('scale-95', 'opacity-0');
+            lectureViewModal.querySelector('div').classList.add('scale-90', 'opacity-0');
+            lectureViewModal.querySelector('div').classList.remove('scale-100', 'opacity-100');
             setTimeout(() => {
                 lectureViewModal.classList.add('hidden');
             }, 300); // Allow animation to finish
@@ -428,7 +479,8 @@
         function hideModalImmediately() {
             lectureAudioPlayer.pause();
             lectureViewModal.classList.add('hidden');
-            lectureViewModal.querySelector('div').classList.add('scale-95', 'opacity-0');
+            lectureViewModal.querySelector('div').classList.add('scale-90', 'opacity-0');
+            lectureViewModal.querySelector('div').classList.remove('scale-100', 'opacity-100');
         }
 
         // Event listeners for modal
