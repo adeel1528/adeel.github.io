@@ -13,8 +13,8 @@
             background-color: #1e293b; /* Dark blue background - Slate 900 */
             /* Subtle grid pattern */
             background-image:
-                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+                linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
             background-size: 20px 20px; /* Adjust grid size */
         }
         /* Custom scrollbar for better aesthetics */
@@ -47,13 +47,13 @@
         audio {
             width: 100%;
             border-radius: 10px;
-            background-color: #334155; /* Slate 700 for audio player background */
+            background-color: #475569; /* Slate 600 for audio player background */
             padding: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             outline: none; /* Remove default focus outline */
         }
         audio::-webkit-media-controls-panel {
-            background-color: #475569; /* Slate 600 for control panel */
+            background-color: #64748b; /* Slate 500 for control panel */
             border-radius: 8px;
         }
         audio::-webkit-media-controls-play-button {
@@ -64,11 +64,11 @@
             color: #cbd5e1; /* Light text color */
         }
         audio::-webkit-media-controls-timeline {
-            background-color: #64748b; /* Slate 500 for timeline background */
+            background-color: #94a3b8; /* Slate 400 for timeline background */
             border-radius: 5px;
         }
         audio::-webkit-media-controls-volume-slider {
-            background-color: #94a3b8; /* Slate 400 for volume slider background */
+            background-color: #cbd5e1; /* Slate 300 for volume slider background */
             border-radius: 5px;
         }
 
@@ -80,14 +80,19 @@
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
-    <div id="app" class="bg-slate-800 rounded-2xl p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out">
+    <div id="app" class="bg-slate-700 rounded-2xl p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out">
+        <!-- College Logo -->
+        <div class="flex justify-center mb-6">
+            <img src="https://bgmchurch.org/wp-content/uploads/elementor/thumbs/bgm-bluelogo-qzshc087trea6hnhp0uqc6aifp2s383kxpbmzskp9k.png" alt="College Logo" class="w-28 h-28 rounded-full border-4 border-amber-400 shadow-lg object-cover">
+        </div>
+
         <h1 class="text-4xl font-extrabold text-center mb-8 text-white">Lecture Portal</h1>
 
         <!-- Navigation/Breadcrumbs -->
         <div class="mb-8 text-slate-300 text-lg flex items-center justify-center">
-            <span id="breadcrumb-home" class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-700 hover:bg-slate-600">Home</span>
-            <span id="breadcrumb-class" class="hidden"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-700 hover:bg-slate-600"></span></span>
-            <span id="breadcrumb-teacher" class="hidden"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-700 hover:bg-slate-600"></span></span>
+            <span id="breadcrumb-home" class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500">Home</span>
+            <span id="breadcrumb-class" class="hidden"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
+            <span id="breadcrumb-teacher" class="hidden"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
         </div>
 
         <!-- Instructions for URL -->
@@ -144,14 +149,14 @@
 
         <!-- Lecture View Modal (hidden initially) -->
         <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50 transition-opacity duration-300 ease-out">
-            <div class="bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-90 opacity-0 transition-all duration-300 ease-out border border-amber-300">
+            <div class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-90 opacity-0 transition-all duration-300 ease-out border border-amber-300">
                 <div class="flex justify-between items-center mb-5">
                     <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
                     <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
                 </div>
 
                 <!-- Language Selection Buttons -->
-                <div class="mb-5 border-t border-slate-700 pt-4">
+                <div class="mb-5 border-t border-slate-600 pt-4">
                     <p class="text-slate-300 mb-2 font-semibold">Zabaan Muntakhab Karein (Select Language):</p>
                     <div class="flex flex-col sm:flex-row gap-3">
                         <button id="lang-english-btn" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">English</button>
@@ -332,7 +337,7 @@
             } else {
                 lecturePortalData.forEach(cls => {
                     const classCard = `
-                        <div class="bg-slate-700 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-600" data-class-id="${cls.id}">
+                        <div class="bg-slate-600 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-500" data-class-id="${cls.id}">
                             <div>
                                 <h3 class="text-white text-xl font-semibold mb-2">${cls.name}</h3>
                                 <p class="text-slate-300 text-sm">${cls.teachers.length} Teachers</p>
@@ -386,7 +391,7 @@
                         return; // Skip this iteration
                     }
                     const teacherCard = `
-                        <div class="bg-slate-700 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col items-center text-center card-hover border border-slate-600" data-teacher-id="${teacher.id}">
+                        <div class="bg-slate-600 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col items-center text-center card-hover border border-slate-500" data-teacher-id="${teacher.id}">
                             <img src="${teacher.picture}" alt="${teacher.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400 shadow-md transform transition-transform duration-200 hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A';">
                             <h3 class="text-white text-xl font-semibold mb-1">${teacher.name}</h3>
                             <p class="text-slate-300 text-sm">${teacher.lectures.length} Lectures</p>
@@ -434,7 +439,7 @@
             } else {
                 teacher.lectures.forEach(lecture => {
                     const lectureCard = `
-                        <div class="bg-slate-700 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-600" data-lecture-id="${lecture.id}">
+                        <div class="bg-slate-600 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-500" data-lecture-id="${lecture.id}">
                             <div>
                                 <h3 class="text-white text-xl font-semibold mb-2">Lecture ${lecture.number}: ${lecture.title}</h3>
                             </div>
