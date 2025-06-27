@@ -43,31 +43,37 @@
             filter: brightness(1.1); /* Slightly brighter on hover */
         }
 
-        /* Styling for the audio player */
-        audio {
+        /* Styling for the audio/video player */
+        audio, video {
             width: 100%;
             border-radius: 10px;
-            background-color: #475569; /* Slate 600 for audio player background */
+            background-color: #475569; /* Slate 600 for player background */
             padding: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             outline: none; /* Remove default focus outline */
         }
-        audio::-webkit-media-controls-panel {
+        audio::-webkit-media-controls-panel,
+        video::-webkit-media-controls-panel {
             background-color: #64748b; /* Slate 500 for control panel */
             border-radius: 8px;
         }
-        audio::-webkit-media-controls-play-button {
+        audio::-webkit-media-controls-play-button,
+        video::-webkit-media-controls-play-button {
             color: #f59e0b; /* Amber 500 for play button */
         }
         audio::-webkit-media-controls-current-time-display,
-        audio::-webkit-media-controls-time-remaining-display {
+        audio::-webkit-media-controls-time-remaining-display,
+        video::-webkit-media-controls-current-time-display,
+        video::-webkit-media-controls-time-remaining-display {
             color: #cbd5e1; /* Light text color */
         }
-        audio::-webkit-media-controls-timeline {
+        audio::-webkit-media-controls-timeline,
+        video::-webkit-media-controls-timeline {
             background-color: #94a3b8; /* Slate 400 for timeline background */
             border-radius: 5px;
         }
-        audio::-webkit-media-controls-volume-slider {
+        audio::-webkit-media-controls-volume-slider,
+        video::-webkit-media-controls-volume-slider {
             background-color: #cbd5e1; /* Slate 300 for volume slider background */
             border-radius: 5px;
         }
@@ -142,6 +148,13 @@
         <!-- Section for Lectures (hidden initially) -->
         <div id="lectures-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Lectures by <span id="current-teacher-name" class="text-amber-400 font-bold"></span></h2>
+            
+            <!-- Search Bar for Lectures -->
+            <div class="mb-6 flex flex-col sm:flex-row gap-3">
+                <input type="text" id="lecture-search-input" placeholder="Lectures search karein..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border border-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <button id="clear-search-btn" class="bg-slate-500 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-600 transition duration-300 shadow-md">Clear Search</button>
+            </div>
+
             <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Lectures will be rendered here by JavaScript -->
             </div>
@@ -164,12 +177,22 @@
                     </div>
                 </div>
 
-                <div class="mb-5">
+                <!-- Video Player (shown if videoUrl is available) -->
+                <div id="lecture-video-player-container" class="mb-5 hidden">
+                    <p class="text-slate-300 mb-2 font-semibold">Lecture Video:</p>
+                    <video id="lecture-video-player" controls preload="metadata">
+                        Your browser does not support the video element.
+                    </video>
+                </div>
+
+                <!-- Audio Player (shown if audioUrl is available) -->
+                <div id="lecture-audio-player-container" class="mb-5 hidden">
                     <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
                     <audio id="lecture-audio-player" controls preload="metadata">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
+                
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">
                         View Lecture Content
@@ -206,6 +229,9 @@
         const lectureViewModal = document.getElementById('lecture-view-modal');
         const lectureModalTitle = document.getElementById('lecture-modal-title');
         const lectureAudioPlayer = document.getElementById('lecture-audio-player');
+        const lectureAudioPlayerContainer = document.getElementById('lecture-audio-player-container');
+        const lectureVideoPlayer = document.getElementById('lecture-video-player');
+        const lectureVideoPlayerContainer = document.getElementById('lecture-video-player-container');
         const lectureViewLink = document.getElementById('lecture-view-link');
         const lectureDownloadLink = document.getElementById('lecture-download-link');
         const closeModalBtn = document.getElementById('close-modal-btn');
@@ -216,6 +242,9 @@
 
         const langEnglishBtn = document.getElementById('lang-english-btn');
         const langUrduBtn = document.getElementById('lang-urdu-btn');
+
+        const lectureSearchInput = document.getElementById('lecture-search-input'); // New: Search input
+        const clearSearchBtn = document.getElementById('clear-search-btn');       // New: Clear search button
 
 
         let currentClass = null;
@@ -310,9 +339,11 @@
                         contentUrl: lecture.contentUrl,
                         downloadUrl: lecture.downloadUrl,
                         audioUrl: lecture.audioUrl,
+                        videoUrl: lecture.videoUrl || '', // New: Video URL
                         contentUrlUrdu: lecture.contentUrlUrdu || '', // New: Urdu content URL
                         downloadUrlUrdu: lecture.downloadUrlUrdu || '', // New: Urdu download URL
-                        audioUrlUrdu: lecture.audioUrlUrdu || '' // New: Urdu audio URL
+                        audioUrlUrdu: lecture.audioUrlUrdu || '', // New: Urdu audio URL
+                        videoUrlUrdu: lecture.videoUrlUrdu || '' // New: Urdu video URL
                     });
                 } else {
                     console.warn(`Lecture ${lecture.title} references non-existent Teacher ID: ${lecture.teacherId}`);
@@ -381,16 +412,33 @@
             teachersContainer.innerHTML = ''; // Clear previous content
             currentClassName.textContent = cls.name;
 
-            if (cls.teachers.length === 0) {
+            // Clear search input when changing teachers
+            lectureSearchInput.value = '';
+
+            // Defensive check for cls and cls.teachers
+            if (!cls || !Array.isArray(cls.teachers) || cls.teachers.length === 0) {
                 teachersContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No teachers available for this class yet.</p>';
-            } else {
-                cls.teachers.forEach(teacher => {
-                    // Defensive check: Ensure teacher object is not null/undefined before accessing its properties
-                    if (!teacher) {
-                        console.warn("Skipping null/undefined teacher entry in class:", cls.name);
-                        return; // Skip this iteration
-                    }
-                    const teacherCard = `
+                // Ensure UI visibility is set correctly for this case
+                classesSection.classList.add('hidden');
+                teachersSection.classList.remove('hidden'); // This section should be visible
+                lecturesSection.classList.add('hidden');
+                lectureViewModal.classList.add('hidden');
+                hideModalImmediately();
+                breadcrumbHome.classList.remove('hidden');
+                breadcrumbClass.classList.remove('hidden');
+                breadcrumbClass.querySelector('span').textContent = cls ? cls.name : 'Unknown Class';
+                breadcrumbTeacher.classList.add('hidden');
+                return; // Exit if no valid teachers array
+            }
+
+            // Only proceed with forEach if cls.teachers is a valid non-empty array
+            cls.teachers.forEach(teacher => {
+                // Defensive check for teacher object integrity inside the loop
+                if (!teacher || typeof teacher !== 'object' || !teacher.id || !teacher.name) {
+                    console.warn("Skipping invalid or incomplete teacher entry:", teacher);
+                    return; // Skip this iteration if teacher object is malformed
+                }
+                const teacherCard = `
                         <div class="bg-slate-600 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col items-center text-center card-hover border border-slate-500" data-teacher-id="${teacher.id}">
                             <img src="${teacher.picture}" alt="${teacher.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400 shadow-md transform transition-transform duration-200 hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A';">
                             <h3 class="text-white text-xl font-semibold mb-1">${teacher.name}</h3>
@@ -398,19 +446,18 @@
                             <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">View Lectures</button>
                         </div>
                     `;
-                    teachersContainer.innerHTML += teacherCard;
-                });
+                teachersContainer.innerHTML += teacherCard;
+            });
 
-                // Add event listeners to teacher cards
-                document.querySelectorAll('#teachers-container > div').forEach(card => {
-                    card.querySelector('button').addEventListener('click', (e) => { // Attach to button
-                        e.stopPropagation(); // Prevent card click from propagating
-                        const teacherId = e.currentTarget.closest('[data-teacher-id]').dataset.teacherId;
-                        currentTeacher = cls.teachers.find(t => t.id === teacherId);
-                        renderLectures(currentTeacher);
-                    });
+            // Add event listeners to teacher cards
+            document.querySelectorAll('#teachers-container > div').forEach(card => {
+                card.querySelector('button').addEventListener('click', (e) => { // Attach to button
+                    e.stopPropagation(); // Prevent card click from propagating
+                    const teacherId = e.currentTarget.closest('[data-teacher-id]').dataset.teacherId;
+                    currentTeacher = cls.teachers.find(t => t.id === teacherId);
+                    renderLectures(currentTeacher);
                 });
-            }
+            });
 
             // Update UI visibility
             classesSection.classList.add('hidden');
@@ -427,17 +474,28 @@
         }
 
         /**
-         * Renders the list of lectures for a given teacher.
+         * Renders the list of lectures for a given teacher, with optional search filtering.
          * @param {Object} teacher - The teacher object.
+         * @param {string} [searchQuery=''] - Optional search query to filter lectures.
          */
-        function renderLectures(teacher) {
+        function renderLectures(teacher, searchQuery = '') {
             lecturesContainer.innerHTML = ''; // Clear previous content
             currentTeacherName.textContent = teacher.name;
 
-            if (teacher.lectures.length === 0) {
-                lecturesContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No lectures available for this teacher yet.</p>';
+            let lecturesToDisplay = teacher.lectures;
+
+            // Apply search filter if a query is provided
+            if (searchQuery) {
+                const lowerCaseQuery = searchQuery.toLowerCase();
+                lecturesToDisplay = teacher.lectures.filter(lecture =>
+                    lecture.title.toLowerCase().includes(lowerCaseQuery)
+                );
+            }
+
+            if (lecturesToDisplay.length === 0) {
+                lecturesContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No lectures found for this teacher' + (searchQuery ? ` matching "${searchQuery}"` : ' yet.') + '</p>';
             } else {
-                teacher.lectures.forEach(lecture => {
+                lecturesToDisplay.forEach(lecture => {
                     const lectureCard = `
                         <div class="bg-slate-600 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-500" data-lecture-id="${lecture.id}">
                             <div>
@@ -475,38 +533,65 @@
         }
 
         /**
-         * Updates the lecture content (audio, view, download links) based on selected language.
+         * Updates the lecture content (audio, video, view, download links) based on selected language.
          * @param {string} lang - 'english' or 'urdu'
          */
         function updateLectureContent(lang) {
             if (!currentSelectedLecture) return; // Ensure a lecture is selected
 
-            let contentUrl, downloadUrl, audioUrl;
+            let contentUrl, downloadUrl, audioUrl, videoUrl;
 
             if (lang === 'english') {
                 contentUrl = currentSelectedLecture.contentUrl;
                 downloadUrl = currentSelectedLecture.downloadUrl;
                 audioUrl = currentSelectedLecture.audioUrl;
+                videoUrl = currentSelectedLecture.videoUrl; // Get English video URL
             } else if (lang === 'urdu') {
                 // Fallback to English if Urdu content is not available
                 contentUrl = currentSelectedLecture.contentUrlUrdu || currentSelectedLecture.contentUrl;
                 downloadUrl = currentSelectedLecture.downloadUrlUrdu || currentSelectedLecture.downloadUrl;
                 audioUrl = currentSelectedLecture.audioUrlUrdu || currentSelectedLecture.audioUrl;
+                videoUrl = currentSelectedLecture.videoUrlUrdu || currentSelectedLecture.videoUrl; // Get Urdu video URL with English fallback
             }
 
-            lectureAudioPlayer.src = audioUrl;
-            lectureAudioPlayer.load(); // Load the audio
-            lectureAudioPlayer.pause(); // Pause any currently playing audio
+            // Handle Video Player
+            if (videoUrl) {
+                lectureVideoPlayer.src = videoUrl;
+                lectureVideoPlayer.load();
+                lectureVideoPlayer.pause(); // Pause any currently playing video
+                lectureVideoPlayerContainer.classList.remove('hidden');
+            } else {
+                lectureVideoPlayer.pause(); // Pause if no video
+                lectureVideoPlayer.removeAttribute('src'); // Clear src
+                lectureVideoPlayerContainer.classList.add('hidden');
+            }
+
+            // Handle Audio Player
+            if (audioUrl) {
+                lectureAudioPlayer.src = audioUrl;
+                lectureAudioPlayer.load(); // Load the audio
+                lectureAudioPlayer.pause(); // Pause any currently playing audio
+                lectureAudioPlayerContainer.classList.remove('hidden');
+            } else {
+                lectureAudioPlayer.pause(); // Pause if no audio
+                lectureAudioPlayer.removeAttribute('src'); // Clear src
+                lectureAudioPlayerContainer.classList.add('hidden');
+            }
+
+            // Hide both if neither is available
+            if (!videoUrl && !audioUrl) {
+                 // You might want to show a message here or just let both be hidden
+            }
+
 
             lectureViewLink.href = contentUrl;
-            // Add target="_blank" so it opens in a new tab
-            lectureViewLink.target = "_blank";
+            lectureViewLink.target = "_blank"; // This makes it open in a new tab
 
             lectureDownloadLink.href = downloadUrl;
             // Dynamic download filename based on language
             lectureDownloadLink.download = `${currentSelectedLecture.title.replace(/\s/g, '_')}_${lang}.pdf`;
 
-             // Update active button styling
+             // Update active button styling for language selection
              langEnglishBtn.classList.remove('bg-blue-700', 'border', 'border-white');
              langUrduBtn.classList.remove('bg-green-700', 'border', 'border-white');
 
@@ -519,7 +604,7 @@
 
 
         /**
-         * Displays the lecture modal with content and audio player.
+         * Displays the lecture modal with content and audio/video player.
          * @param {Object} lecture - The lecture object.
          */
         function showLectureModal(lecture) {
@@ -542,6 +627,7 @@
          */
         function hideLectureModal() {
             lectureAudioPlayer.pause(); // Stop audio when closing modal
+            lectureVideoPlayer.pause(); // Stop video when closing modal (NEW)
             lectureViewModal.querySelector('div').classList.add('scale-90', 'opacity-0');
             lectureViewModal.querySelector('div').classList.remove('scale-100', 'opacity-100');
             setTimeout(() => {
@@ -552,6 +638,7 @@
         // Helper to hide modal immediately without transition
         function hideModalImmediately() {
             lectureAudioPlayer.pause();
+            lectureVideoPlayer.pause(); // Pause video immediately (NEW)
             lectureViewModal.classList.add('hidden');
             lectureViewModal.querySelector('div').classList.add('scale-90', 'opacity-0');
             lectureViewModal.querySelector('div').classList.remove('scale-100', 'opacity-100');
@@ -569,6 +656,20 @@
         langEnglishBtn.addEventListener('click', () => updateLectureContent('english'));
         langUrduBtn.addEventListener('click', () => updateLectureContent('urdu'));
 
+        // New: Event listeners for search
+        lectureSearchInput.addEventListener('keyup', (e) => {
+            if (currentTeacher) { // Only filter if a teacher is selected
+                renderLectures(currentTeacher, e.target.value);
+            }
+        });
+
+        clearSearchBtn.addEventListener('click', () => {
+            lectureSearchInput.value = '';
+            if (currentTeacher) {
+                renderLectures(currentTeacher); // Re-render without filter
+            }
+        });
+
 
         // Breadcrumb Navigation
         breadcrumbHome.addEventListener('click', renderClasses);
@@ -579,6 +680,8 @@
         });
         breadcrumbTeacher.querySelector('span').addEventListener('click', () => {
             if (currentTeacher) {
+                // When navigating back to teacher's lectures, clear search input
+                lectureSearchInput.value = '';
                 renderLectures(currentTeacher);
             }
         });
