@@ -149,6 +149,16 @@
                     <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
                     <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
                 </div>
+
+                <!-- Language Selection Buttons -->
+                <div class="mb-5 border-t border-slate-700 pt-4">
+                    <p class="text-slate-300 mb-2 font-semibold">Zabaan Muntakhab Karein (Select Language):</p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="lang-english-btn" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">English</button>
+                        <button id="lang-urdu-btn" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">اردو (Urdu)</button>
+                    </div>
+                </div>
+
                 <div class="mb-5">
                     <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
                     <audio id="lecture-audio-player" controls preload="metadata">
@@ -173,6 +183,7 @@
         const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRDqBREUsmhFkGZHVQkaRqwsrT8VxiRqCYapG1Ss6CPcbKyD3nKbc1OQP9x3qlPmsF/exec'; // **PLEASE REPLACE THIS WITH YOUR ACTUAL URL**
 
         let lecturePortalData = []; // This will store the data fetched from Google Sheet
+        let currentSelectedLecture = null; // To hold the lecture object when modal is open
 
         // Get DOM elements
         const classesSection = document.getElementById('classes-section');
@@ -197,6 +208,10 @@
         const breadcrumbHome = document.getElementById('breadcrumb-home');
         const breadcrumbClass = document.getElementById('breadcrumb-class');
         const breadcrumbTeacher = document.getElementById('breadcrumb-teacher');
+
+        const langEnglishBtn = document.getElementById('lang-english-btn');
+        const langUrduBtn = document.getElementById('lang-urdu-btn');
+
 
         let currentClass = null;
         let currentTeacher = null;
@@ -259,6 +274,11 @@
 
             // Populate Teachers Map and link to Classes
             rawData.teachers.forEach(teacher => {
+                    // Defensive check: Ensure teacher object is not null/undefined before processing
+                    if (!teacher) {
+                        console.warn("Skipping null/undefined teacher entry in raw data.");
+                        return; // Skip this iteration
+                    }
                 const classObj = classesMap.get(teacher.classId);
                 if (classObj) {
                     const teacherObj = {
@@ -274,7 +294,7 @@
                 }
             });
 
-            // Link Lectures to Teachers
+            // Link Lectures to Teachers, including Urdu links
             rawData.lectures.forEach(lecture => {
                 const teacherObj = teachersMap.get(lecture.teacherId);
                 if (teacherObj) {
@@ -284,7 +304,10 @@
                         title: lecture.title,
                         contentUrl: lecture.contentUrl,
                         downloadUrl: lecture.downloadUrl,
-                        audioUrl: lecture.audioUrl
+                        audioUrl: lecture.audioUrl,
+                        contentUrlUrdu: lecture.contentUrlUrdu || '', // New: Urdu content URL
+                        downloadUrlUrdu: lecture.downloadUrlUrdu || '', // New: Urdu download URL
+                        audioUrlUrdu: lecture.audioUrlUrdu || '' // New: Urdu audio URL
                     });
                 } else {
                     console.warn(`Lecture ${lecture.title} references non-existent Teacher ID: ${lecture.teacherId}`);
@@ -357,6 +380,11 @@
                 teachersContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No teachers available for this class yet.</p>';
             } else {
                 cls.teachers.forEach(teacher => {
+                    // Defensive check: Ensure teacher object is not null/undefined before accessing its properties
+                    if (!teacher) {
+                        console.warn("Skipping null/undefined teacher entry in class:", cls.name);
+                        return; // Skip this iteration
+                    }
                     const teacherCard = `
                         <div class="bg-slate-700 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col items-center text-center card-hover border border-slate-600" data-teacher-id="${teacher.id}">
                             <img src="${teacher.picture}" alt="${teacher.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400 shadow-md transform transition-transform duration-200 hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A';">
@@ -442,18 +470,59 @@
         }
 
         /**
+         * Updates the lecture content (audio, view, download links) based on selected language.
+         * @param {string} lang - 'english' or 'urdu'
+         */
+        function updateLectureContent(lang) {
+            if (!currentSelectedLecture) return; // Ensure a lecture is selected
+
+            let contentUrl, downloadUrl, audioUrl;
+
+            if (lang === 'english') {
+                contentUrl = currentSelectedLecture.contentUrl;
+                downloadUrl = currentSelectedLecture.downloadUrl;
+                audioUrl = currentSelectedLecture.audioUrl;
+            } else if (lang === 'urdu') {
+                // Fallback to English if Urdu content is not available
+                contentUrl = currentSelectedLecture.contentUrlUrdu || currentSelectedLecture.contentUrl;
+                downloadUrl = currentSelectedLecture.downloadUrlUrdu || currentSelectedLecture.downloadUrl;
+                audioUrl = currentSelectedLecture.audioUrlUrdu || currentSelectedLecture.audioUrl;
+            }
+
+            lectureAudioPlayer.src = audioUrl;
+            lectureAudioPlayer.load(); // Load the audio
+            lectureAudioPlayer.pause(); // Pause any currently playing audio
+
+            lectureViewLink.href = contentUrl;
+            // Add target="_blank" so it opens in a new tab
+            lectureViewLink.target = "_blank";
+
+            lectureDownloadLink.href = downloadUrl;
+            // Dynamic download filename based on language
+            lectureDownloadLink.download = `${currentSelectedLecture.title.replace(/\s/g, '_')}_${lang}.pdf`;
+
+             // Update active button styling
+             langEnglishBtn.classList.remove('bg-blue-700', 'border', 'border-white');
+             langUrduBtn.classList.remove('bg-green-700', 'border', 'border-white');
+
+            if (lang === 'english') {
+                langEnglishBtn.classList.add('bg-blue-700', 'border', 'border-white');
+            } else {
+                langUrduBtn.classList.add('bg-green-700', 'border', 'border-white');
+            }
+        }
+
+
+        /**
          * Displays the lecture modal with content and audio player.
          * @param {Object} lecture - The lecture object.
          */
         function showLectureModal(lecture) {
+            currentSelectedLecture = lecture; // Store the selected lecture
             lectureModalTitle.textContent = lecture.title;
-            lectureAudioPlayer.src = lecture.audioUrl;
-            lectureAudioPlayer.load(); // Load the audio
-            lectureAudioPlayer.pause(); // Pause any currently playing audio
 
-            lectureViewLink.href = lecture.contentUrl;
-            lectureDownloadLink.href = lecture.downloadUrl;
-            lectureDownloadLink.download = `${lecture.title}.pdf`; // Suggest a filename for download
+            // Default to English content when modal opens
+            updateLectureContent('english'); // Set initial language to English
 
             lectureViewModal.classList.remove('hidden');
             // Animate modal in
@@ -490,6 +559,11 @@
                 hideLectureModal();
             }
         });
+
+        // Event listeners for language selection buttons
+        langEnglishBtn.addEventListener('click', () => updateLectureContent('english'));
+        langUrduBtn.addEventListener('click', () => updateLectureContent('urdu'));
+
 
         // Breadcrumb Navigation
         breadcrumbHome.addEventListener('click', renderClasses);
