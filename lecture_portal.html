@@ -59,11 +59,26 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* New: Style for the active breadcrumb */
+        /* Style for the active breadcrumb */
         .active-breadcrumb {
             background-color: #f59e0b !important; /* amber-500 */
             color: #ffffff !important;
             font-weight: 700;
+        }
+
+        /* New: Glowing animation for the search bar */
+        #lecture-search-input {
+            transition: all 0.3s ease-in-out;
+            border-color: #f59e0b; /* amber-500 */
+            box-shadow: 0 0 8px rgba(252, 211, 77, 0.4);
+        }
+        #lecture-search-input:focus {
+            animation: glowing-border 1.8s infinite;
+        }
+        @keyframes glowing-border {
+            0% { box-shadow: 0 0 8px rgba(252, 211, 77, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(252, 211, 77, 0.8); }
+            100% { box-shadow: 0 0 8px rgba(252, 211, 77, 0.4); }
         }
     </style>
 </head>
@@ -134,7 +149,7 @@
         <div id="lectures-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Lectures for <span id="current-subject-name" class="text-amber-400 font-bold"></span> by <span id="current-teacher-name" class="text-amber-400 font-bold"></span></h2>
             <div class="mb-6 flex flex-col sm:flex-row gap-3">
-                <input type="text" id="lecture-search-input" placeholder="Lectures search karein..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border border-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <input type="text" id="lecture-search-input" placeholder="Lectures search karein..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border focus:outline-none">
                 <button id="clear-search-btn" class="bg-slate-500 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-600 transition duration-300 shadow-md">Clear Search</button>
             </div>
             <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
