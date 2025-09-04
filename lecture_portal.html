@@ -131,7 +131,7 @@
         </div>
 
         <!-- Lecture View Modal -->
-        <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 pt-16 hidden z-50 transition-opacity duration-300 ease-out">
+        <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-75 p-4 hidden z-50 transition-opacity duration-300 ease-out">
             <div class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
                 <div class="flex justify-between items-center mb-5">
                     <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
@@ -327,13 +327,13 @@
             section.classList.add('section-fade-in');
             section.onanimationend = () => section.classList.remove('section-fade-in');
             
-            hideModal();
+            hideModal(true); // Hide modal immediately
             if (sectionName !== 'lectures') DOMElements.search.input.value = '';
             updateBreadcrumbs();
         }
 
         function updateBreadcrumbs() {
-            const { home, class: cls, teacher, subject } = DOMElements.breadcrumbs;
+            const { class: cls, teacher, subject } = DOMElements.breadcrumbs;
             cls.classList.toggle('hidden', !state.currentClass);
             if (state.currentClass) cls.querySelector('span:last-child').textContent = state.currentClass.name;
             
@@ -367,10 +367,39 @@
             DOMElements.modal.langUrduBtn.classList.toggle('ring-2', isUrdu);
         }
 
-        function showModal(lecture) {
+        function showModal(lecture, event) {
             state.currentLecture = lecture;
             DOMElements.modal.title.textContent = `Lecture ${lecture.number}: ${lecture.title}`;
             updateModalContent('english');
+
+            const modalContent = DOMElements.modal.content;
+            const cardElement = event.target.closest('[data-id]');
+            
+            const cardRect = cardElement.getBoundingClientRect();
+            
+            modalContent.style.position = 'absolute';
+            
+            const modalMaxWidth = 672; // max-w-2xl
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            let left = cardRect.left;
+            if (left + modalMaxWidth > viewportWidth) {
+                left = viewportWidth - modalMaxWidth - 16; 
+            }
+            if (left < 16) left = 16;
+
+            let top = cardRect.top;
+            // A simple check to keep it on screen vertically
+            const modalApproxHeight = 600; 
+            if (top + modalApproxHeight > viewportHeight) {
+                top = viewportHeight - modalApproxHeight - 16;
+            }
+            if (top < 16) top = 16;
+
+            modalContent.style.left = `${left}px`;
+            modalContent.style.top = `${top}px`;
+
             DOMElements.modal.main.classList.remove('hidden');
             setTimeout(() => DOMElements.modal.content.classList.remove('scale-95', 'opacity-0'), 10);
         }
@@ -378,10 +407,16 @@
         function hideModal(immediate = false) {
             DOMElements.modal.audioPlayer.pause();
             DOMElements.modal.videoPlayer.pause();
+            
+            const modalContent = DOMElements.modal.content;
+            modalContent.style.position = '';
+            modalContent.style.top = '';
+            modalContent.style.left = '';
+
             if (immediate) {
                 DOMElements.modal.main.classList.add('hidden');
             } else {
-                DOMElements.modal.content.classList.add('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => DOMElements.modal.main.classList.add('hidden'), 300);
             }
         }
@@ -411,7 +446,7 @@
                             break;
                         case 'lectures-container':
                             const lecture = state.currentSubject.lectures.find(l => l.id === id);
-                            if (lecture) showModal(lecture);
+                            if (lecture) showModal(lecture, e);
                             break;
                     }
                 });
