@@ -58,6 +58,13 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* New: Style for the active breadcrumb */
+        .active-breadcrumb {
+            background-color: #f59e0b !important; /* amber-500 */
+            color: #ffffff !important;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
@@ -314,7 +321,15 @@
             state.currentSubject = subject;
             DOMElements.labels.subjectName.textContent = subject.name;
             DOMElements.labels.teacherName.textContent = state.currentTeacher.name;
-            const lectures = searchQuery ? subject.lectures.filter(l => l.title.toLowerCase().includes(searchQuery.toLowerCase())) : subject.lectures;
+            
+            const lowerCaseQuery = searchQuery.toLowerCase();
+            const lectures = searchQuery 
+                ? subject.lectures.filter(l => 
+                    l.title.toLowerCase().includes(lowerCaseQuery) || 
+                    String(l.number).includes(lowerCaseQuery)
+                  ) 
+                : subject.lectures;
+
             const container = DOMElements.containers.lectures;
             container.innerHTML = lectures.map(l => `
                 <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${l.id}">
@@ -337,7 +352,14 @@
         }
 
         function updateBreadcrumbs() {
-            const { class: cls, teacher, subject } = DOMElements.breadcrumbs;
+            const { home, class: cls, teacher, subject } = DOMElements.breadcrumbs;
+
+            // Reset all breadcrumbs first by removing the active class
+            [home, cls.querySelector('span:last-child'), teacher.querySelector('span:last-child'), subject.querySelector('span:last-child')].forEach(el => {
+                el.classList.remove('active-breadcrumb');
+            });
+            
+            // Set visibility
             cls.classList.toggle('hidden', !state.currentClass);
             if (state.currentClass) cls.querySelector('span:last-child').textContent = state.currentClass.name;
             
@@ -346,6 +368,17 @@
             
             subject.classList.toggle('hidden', !state.currentSubject);
             if (state.currentSubject) subject.querySelector('span:last-child').textContent = state.currentSubject.name;
+
+            // Set the active breadcrumb based on the current state
+            if (state.currentSubject) {
+                subject.querySelector('span:last-child').classList.add('active-breadcrumb');
+            } else if (state.currentTeacher) {
+                teacher.querySelector('span:last-child').classList.add('active-breadcrumb');
+            } else if (state.currentClass) {
+                cls.querySelector('span:last-child').classList.add('active-breadcrumb');
+            } else {
+                home.classList.add('active-breadcrumb');
+            }
         }
 
         function updateModalContent(lang) {
@@ -426,7 +459,7 @@
                             break;
                         case 'lectures-container':
                             const lecture = state.currentSubject.lectures.find(l => l.id === id);
-                            if (lecture) showModal(lecture, e); // Pass the event object
+                            if (lecture) showModal(lecture, e);
                             break;
                     }
                 });
@@ -449,8 +482,8 @@
 
             // Breadcrumbs
             DOMElements.breadcrumbs.home.addEventListener('click', () => { state.currentClass = state.currentTeacher = state.currentSubject = null; renderClasses(); });
-            DOMElements.breadcrumbs.class.addEventListener('click', () => { state.currentTeacher = state.currentSubject = null; renderTeachers(state.currentClass); });
-            DOMElements.breadcrumbs.teacher.addEventListener('click', () => { state.currentSubject = null; renderSubjects(state.currentTeacher); });
+            DOMElements.breadcrumbs.class.querySelector('span:last-child').addEventListener('click', () => { state.currentTeacher = state.currentSubject = null; renderTeachers(state.currentClass); });
+            DOMElements.breadcrumbs.teacher.querySelector('span:last-child').addEventListener('click', () => { state.currentSubject = null; renderSubjects(state.currentTeacher); });
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
