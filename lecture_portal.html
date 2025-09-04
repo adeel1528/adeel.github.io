@@ -8,6 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #1e293b; /* Dark blue background - Slate 900 */
@@ -57,14 +60,14 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div id="app" class="bg-slate-700 rounded-2xl p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out relative overflow-hidden">
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
+    <div id="app" class="bg-slate-700 rounded-2xl p-4 sm:p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out relative overflow-hidden">
         <!-- College Logo -->
         <div class="flex justify-center mb-6">
             <img src="https://bgmchurch.org/wp-content/uploads/elementor/thumbs/bgm-bluelogo-qzshc087trea6hnhp0uqc6aifp2s383kxpbmzskp9k.png" alt="College Logo" class="w-28 h-28 rounded-full border-4 border-amber-400 shadow-lg object-cover">
         </div>
 
-        <h1 class="text-4xl font-extrabold text-center mb-8 text-white">Lecture Portal</h1>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-white">Lecture Portal</h1>
 
         <!-- Navigation/Breadcrumbs -->
         <div class="mb-8 text-slate-300 text-lg flex items-center justify-center flex-wrap gap-2">
@@ -131,8 +134,8 @@
         </div>
 
         <!-- Lecture View Modal -->
-        <div id="lecture-view-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4">
-            <div id="modal-content" class="absolute bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
+        <div id="lecture-view-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4 flex items-center justify-center">
+            <div id="modal-content" class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
                 <div class="flex justify-between items-center mb-5">
                     <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
                     <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
@@ -372,44 +375,13 @@
             state.currentLecture = lecture;
             DOMElements.modal.title.textContent = `Lecture ${lecture.number}: ${lecture.title}`;
             updateModalContent('english');
-
-            const modalContent = DOMElements.modal.content;
-            const cardElement = event.target.closest('[data-id]');
-            
-            // For mobile screens, or if something goes wrong, center the modal.
-            if (window.innerWidth < 768 || !cardElement) {
-                DOMElements.modal.main.classList.add('items-center', 'justify-center');
-                modalContent.style.position = '';
-                modalContent.style.top = '';
-                modalContent.style.left = '';
-            } else {
-                // On larger screens, position relative to the card.
-                DOMElements.modal.main.classList.remove('items-center', 'justify-center');
-                modalContent.style.position = 'absolute';
-
-                const appRect = DOMElements.app.getBoundingClientRect();
-                const cardRect = cardElement.getBoundingClientRect();
-                
-                const modalWidth = modalContent.offsetWidth;
-                const modalHeight = modalContent.offsetHeight;
-
-                // Calculate position to center modal on the card, relative to the #app container
-                let top = (cardRect.top - appRect.top) + (cardRect.height / 2) - (modalHeight / 2);
-                let left = (cardRect.left - appRect.left) + (cardRect.width / 2) - (modalWidth / 2);
-
-                const padding = 24; // A safe padding value
-
-                // Keep the modal inside the #app container's boundaries
-                left = Math.max(padding, Math.min(left, appRect.width - modalWidth - padding));
-                top = Math.max(padding, Math.min(top, appRect.height - modalHeight - padding));
-                
-                modalContent.style.top = `${top}px`;
-                modalContent.style.left = `${left}px`;
-            }
             
             DOMElements.modal.main.classList.remove('hidden');
             setTimeout(() => {
-                 modalContent.classList.remove('scale-95', 'opacity-0');
+                const modalContent = DOMElements.modal.content;
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                // Scroll the modal into view smoothly
+                modalContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 10);
         }
 
