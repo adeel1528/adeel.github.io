@@ -18,70 +18,42 @@
             background-size: 20px 20px; /* Adjust grid size */
         }
         /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #475569; /* Darker track - Slate 600 */
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #64748b; /* Medium gray thumb - Slate 500 */
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; /* Lighter gray on hover - Slate 400 */
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* Enhanced animation for card hover */
-        .card-hover {
-            transition: all 0.3s ease-in-out;
-        }
+        .card-hover { transition: all 0.3s ease-in-out; }
         .card-hover:hover {
-            transform: translateY(-8px) scale(1.02); /* More pronounced lift and slight scale */
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* Stronger shadow for dark theme */
-            filter: brightness(1.1); /* Slightly brighter on hover */
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            filter: brightness(1.1);
         }
 
         /* Styling for the audio/video player */
         audio, video {
             width: 100%;
             border-radius: 10px;
-            background-color: #475569; /* Slate 600 for player background */
+            background-color: #475569;
             padding: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            outline: none; /* Remove default focus outline */
-        }
-        audio::-webkit-media-controls-panel,
-        video::-webkit-media-controls-panel {
-            background-color: #64748b; /* Slate 500 for control panel */
-            border-radius: 8px;
-        }
-        audio::-webkit-media-controls-play-button,
-        video::-webkit-media-controls-play-button {
-            color: #f59e0b; /* Amber 500 for play button */
-        }
-        audio::-webkit-media-controls-current-time-display,
-        audio::-webkit-media-controls-time-remaining-display,
-        video::-webkit-media-controls-current-time-display,
-        video::-webkit-media-controls-time-remaining-display {
-            color: #cbd5e1; /* Light text color */
-        }
-        audio::-webkit-media-controls-timeline,
-        video::-webkit-media-controls-timeline {
-            background-color: #94a3b8; /* Slate 400 for timeline background */
-            border-radius: 5px;
-        }
-        audio::-webkit-media-controls-volume-slider,
-        video::-webkit-media-controls-volume-slider {
-            background-color: #cbd5e1; /* Slate 300 for volume slider background */
-            border-radius: 5px;
+            outline: none;
         }
 
         /* Custom glow for main app container */
         #app {
-            box-shadow: 0 0 20px rgba(252, 211, 77, 0.4), /* Amber 300 glow */
-                        0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(252, 211, 77, 0.4), 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* New: Fade-in animation for sections */
+        .section-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -95,10 +67,11 @@
         <h1 class="text-4xl font-extrabold text-center mb-8 text-white">Lecture Portal</h1>
 
         <!-- Navigation/Breadcrumbs -->
-        <div class="mb-8 text-slate-300 text-lg flex items-center justify-center">
+        <div class="mb-8 text-slate-300 text-lg flex items-center justify-center flex-wrap gap-2">
             <span id="breadcrumb-home" class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500">Home</span>
-            <span id="breadcrumb-class" class="hidden"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
-            <span id="breadcrumb-teacher" class="hidden"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
+            <span id="breadcrumb-class" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
+            <span id="breadcrumb-teacher" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
+            <span id="breadcrumb-subject" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
         </div>
 
         <!-- Instructions for URL -->
@@ -123,8 +96,8 @@
             <p class="text-base">It seems there was a problem fetching information. Please ensure:</p>
             <ul class="list-disc list-inside text-left mx-auto max-w-sm mt-3">
                 <li>The Google Apps Script is correctly deployed as a "Web App" with "Anyone" access.</li>
-                <li>The <code class="bg-red-800 px-1 rounded-sm font-mono text-red-200">GOOGLE_APPS_SCRIPT_URL</code> in this HTML file is updated with the correct deployed URL.</li>
-                <li>Your Google Sheet names (`Classes`, `Teachers`, `Lectures`) and column headers are exactly as specified.</li>
+                <li>The <code class="bg-red-800 px-1 rounded-sm font-mono text-red-200">GOOGLE_APPS_SCRIPT_URL</code> in this HTML file is updated.</li>
+                <li>Your Google Sheet has a `subject` column in the `Lectures` tab.</li>
             </ul>
             <p class="text-sm mt-4">For more details, check your browser's console (F12).</p>
         </div>
@@ -132,43 +105,38 @@
         <!-- Section for Classes -->
         <div id="classes-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Classes</h2>
-            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Classes will be rendered here by JavaScript -->
-            </div>
+            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
 
-        <!-- Section for Teachers (hidden initially) -->
+        <!-- Section for Teachers -->
         <div id="teachers-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Teachers for <span id="current-class-name" class="text-amber-400 font-bold"></span></h2>
-            <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Teachers will be rendered here by JavaScript -->
-            </div>
+            <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </div>
+        
+        <!-- Section for Subjects -->
+        <div id="subjects-section" class="hidden">
+            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Subjects by <span id="current-teacher-name-for-subjects" class="text-amber-400 font-bold"></span></h2>
+            <div id="subjects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
 
-        <!-- Section for Lectures (hidden initially) -->
+        <!-- Section for Lectures -->
         <div id="lectures-section" class="hidden">
-            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Lectures by <span id="current-teacher-name" class="text-amber-400 font-bold"></span></h2>
-            
-            <!-- Search Bar for Lectures -->
+            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Lectures for <span id="current-subject-name" class="text-amber-400 font-bold"></span> by <span id="current-teacher-name" class="text-amber-400 font-bold"></span></h2>
             <div class="mb-6 flex flex-col sm:flex-row gap-3">
                 <input type="text" id="lecture-search-input" placeholder="Lectures search karein..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border border-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500">
                 <button id="clear-search-btn" class="bg-slate-500 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-600 transition duration-300 shadow-md">Clear Search</button>
             </div>
-
-            <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Lectures will be rendered here by JavaScript -->
-            </div>
+            <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
 
-        <!-- Lecture View Modal (hidden initially) -->
-        <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50 transition-opacity duration-300 ease-out">
-            <div class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-90 opacity-0 transition-all duration-300 ease-out border border-amber-300">
+        <!-- Lecture View Modal -->
+        <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 pt-16 hidden z-50 transition-opacity duration-300 ease-out">
+            <div class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
                 <div class="flex justify-between items-center mb-5">
                     <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
                     <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
                 </div>
-
-                <!-- Language Selection Buttons -->
                 <div class="mb-5 border-t border-slate-600 pt-4">
                     <p class="text-slate-300 mb-2 font-semibold">Zabaan Muntakhab Karein (Select Language):</p>
                     <div class="flex flex-col sm:flex-row gap-3">
@@ -176,30 +144,17 @@
                         <button id="lang-urdu-btn" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">اردو (Urdu)</button>
                     </div>
                 </div>
-
-                <!-- Video Player (shown if videoUrl is available) -->
                 <div id="lecture-video-player-container" class="mb-5 hidden">
                     <p class="text-slate-300 mb-2 font-semibold">Lecture Video:</p>
-                    <video id="lecture-video-player" controls preload="metadata">
-                        Your browser does not support the video element.
-                    </video>
+                    <video id="lecture-video-player" controls preload="metadata"></video>
                 </div>
-
-                <!-- Audio Player (shown if audioUrl is available) -->
                 <div id="lecture-audio-player-container" class="mb-5 hidden">
                     <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
-                    <audio id="lecture-audio-player" controls preload="metadata">
-                        Your browser does not support the audio element.
-                    </audio>
+                    <audio id="lecture-audio-player" controls preload="metadata"></audio>
                 </div>
-                
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">
-                        View Lecture Content
-                    </a>
-                    <a id="lecture-download-link" href="#" download class="flex-1 bg-amber-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">
-                        Download Lecture
-                    </a>
+                    <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition">View Content</a>
+                    <a id="lecture-download-link" href="#" download class="flex-1 bg-amber-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-700 transition">Download</a>
                 </div>
             </div>
         </div>
@@ -207,495 +162,288 @@
 
     <script>
         // !! IMPORTANT: Replace this with the deployed Google Apps Script Web App URL !!
-        // Example: 'https://script.google.com/macros/s/AKfyc.../exec'
-        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRDqBREUsmhFkGZHVQkaRqwsrT8VxiRqCYapG1Ss6CPcbKyD3nKbc1OQP9x3qlPmsF/exec'; // **PLEASE REPLACE THIS WITH YOUR ACTUAL URL**
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRDqBREUsmhFkGZHVQkaRqwsrT8VxiRqCYapG1Ss6CPcbKyD3nKbc1OQP9x3qlPmsF/exec'; // **PLEASE REPLACE THIS**
 
-        let lecturePortalData = []; // This will store the data fetched from Google Sheet
-        let currentSelectedLecture = null; // To hold the lecture object when modal is open
+        const state = {
+            portalData: [],
+            currentClass: null,
+            currentTeacher: null,
+            currentSubject: null,
+            currentLecture: null
+        };
 
-        // Get DOM elements
-        const classesSection = document.getElementById('classes-section');
-        const classesContainer = document.getElementById('classes-container');
-        const teachersSection = document.getElementById('teachers-section');
-        const teachersContainer = document.getElementById('teachers-container');
-        const currentClassName = document.getElementById('current-class-name');
-        const lecturesSection = document.getElementById('lectures-section');
-        const lecturesContainer = document.getElementById('lectures-container');
-        const currentTeacherName = document.getElementById('current-teacher-name');
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const errorMessage = document.getElementById('error-message');
-        const urlInstruction = document.getElementById('url-instruction');
+        const DOMElements = {
+            sections: {
+                classes: document.getElementById('classes-section'),
+                teachers: document.getElementById('teachers-section'),
+                subjects: document.getElementById('subjects-section'),
+                lectures: document.getElementById('lectures-section'),
+            },
+            containers: {
+                classes: document.getElementById('classes-container'),
+                teachers: document.getElementById('teachers-container'),
+                subjects: document.getElementById('subjects-container'),
+                lectures: document.getElementById('lectures-container'),
+            },
+            labels: {
+                className: document.getElementById('current-class-name'),
+                teacherNameForSubjects: document.getElementById('current-teacher-name-for-subjects'),
+                teacherName: document.getElementById('current-teacher-name'),
+                subjectName: document.getElementById('current-subject-name'),
+            },
+            breadcrumbs: {
+                home: document.getElementById('breadcrumb-home'),
+                class: document.getElementById('breadcrumb-class'),
+                teacher: document.getElementById('breadcrumb-teacher'),
+                subject: document.getElementById('breadcrumb-subject'),
+            },
+            modal: {
+                main: document.getElementById('lecture-view-modal'),
+                content: document.getElementById('lecture-view-modal').querySelector('div'),
+                title: document.getElementById('lecture-modal-title'),
+                closeBtn: document.getElementById('close-modal-btn'),
+                langEnglishBtn: document.getElementById('lang-english-btn'),
+                langUrduBtn: document.getElementById('lang-urdu-btn'),
+                videoContainer: document.getElementById('lecture-video-player-container'),
+                videoPlayer: document.getElementById('lecture-video-player'),
+                audioContainer: document.getElementById('lecture-audio-player-container'),
+                audioPlayer: document.getElementById('lecture-audio-player'),
+                viewLink: document.getElementById('lecture-view-link'),
+                downloadLink: document.getElementById('lecture-download-link'),
+            },
+            search: {
+                input: document.getElementById('lecture-search-input'),
+                clearBtn: document.getElementById('clear-search-btn'),
+            },
+            indicators: {
+                loading: document.getElementById('loading-indicator'),
+                error: document.getElementById('error-message'),
+                urlInstruction: document.getElementById('url-instruction'),
+            }
+        };
 
-        const lectureViewModal = document.getElementById('lecture-view-modal');
-        const lectureModalTitle = document.getElementById('lecture-modal-title');
-        const lectureAudioPlayer = document.getElementById('lecture-audio-player');
-        const lectureAudioPlayerContainer = document.getElementById('lecture-audio-player-container');
-        const lectureVideoPlayer = document.getElementById('lecture-video-player');
-        const lectureVideoPlayerContainer = document.getElementById('lecture-video-player-container');
-        const lectureViewLink = document.getElementById('lecture-view-link');
-        const lectureDownloadLink = document.getElementById('lecture-download-link');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-
-        const breadcrumbHome = document.getElementById('breadcrumb-home');
-        const breadcrumbClass = document.getElementById('breadcrumb-class');
-        const breadcrumbTeacher = document.getElementById('breadcrumb-teacher');
-
-        const langEnglishBtn = document.getElementById('lang-english-btn');
-        const langUrduBtn = document.getElementById('lang-urdu-btn');
-
-        const lectureSearchInput = document.getElementById('lecture-search-input'); // New: Search input
-        const clearSearchBtn = document.getElementById('clear-search-btn');       // New: Clear search button
-
-
-        let currentClass = null;
-        let currentTeacher = null;
-
-        /**
-         * Fetches data from the Google Apps Script web app.
-         * @returns {Promise<Array>} A promise that resolves with the processed lecture portal data.
-         */
-        async function fetchDataFromGoogleSheet() {
-            loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            urlInstruction.classList.add('hidden'); // Hide instruction once fetch starts
-
+        async function fetchData() {
+            DOMElements.indicators.loading.classList.remove('hidden');
+            DOMElements.indicators.error.classList.add('hidden');
+            DOMElements.indicators.urlInstruction.classList.add('hidden');
             try {
-                // Check if the URL is still the placeholder.
-                // Replace this with a check against your actual valid URL, or ensure the user always replaces it.
-                if (GOOGLE_APPS_SCRIPT_URL.includes('_TEST_APP_URL_FOR_DEMO_ONLY_DO_NOT_USE_THIS') || !GOOGLE_APPS_SCRIPT_URL.startsWith('https://script.google.com/macros/s/')) {
-                    // Show the instruction if URL is not set or is still the placeholder, and stop execution
-                    urlInstruction.classList.remove('hidden');
-                    loadingIndicator.classList.add('hidden');
-                    return [];
+                if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.includes('PLEASE+REPLACE+THIS')) {
+                    throw new Error("Google Apps Script URL is not set.");
                 }
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const rawData = await response.json();
-                console.log("Raw data from Google Sheet:", rawData);
-
-                // Process raw data into the desired structure
-                return processSheetData(rawData);
-
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const result = await response.json();
+                if (result.status !== 'success' || !result.data) throw new Error(result.message || 'Invalid API response');
+                return processData(result.data);
             } catch (error) {
-                console.error('Failed to fetch or process data from Google Sheet:', error);
-                loadingIndicator.classList.add('hidden');
-                errorMessage.classList.remove('hidden');
-                return []; // Return empty array on error
+                console.error('Fetch error:', error);
+                DOMElements.indicators.error.classList.remove('hidden');
+                DOMElements.indicators.urlInstruction.classList.remove('hidden');
+                return [];
             } finally {
-                loadingIndicator.classList.add('hidden');
+                DOMElements.indicators.loading.classList.add('hidden');
             }
         }
 
-        /**
-         * Processes the raw data from Google Sheet into a structured format for the app.
-         * @param {Object} rawData - Object containing arrays for Classes, Teachers, and Lectures.
-         * @returns {Array} Structured lecture portal data.
-         */
-        function processSheetData(rawData) {
-            const classesMap = new Map();
-            const teachersMap = new Map();
-
-            // Populate Classes Map
-            rawData.classes.forEach(cls => {
-                classesMap.set(cls.id, {
-                    id: cls.id,
-                    name: cls.name,
-                    teachers: []
-                });
-            });
-
-            // Populate Teachers Map and link to Classes
-            rawData.teachers.forEach(teacher => {
-                    // Defensive check: Ensure teacher object is not null/undefined before processing
-                    if (!teacher) {
-                        console.warn("Skipping null/undefined teacher entry in raw data.");
-                        return; // Skip this iteration
-                    }
+        function processData(rawData) {
+            const classesMap = new Map((rawData.classes || []).map(c => [c.id, { ...c, teachers: [] }]));
+            const teachersMap = new Map((rawData.teachers || []).map(t => [t.id, { ...t, picture: t.picture || 'https://placehold.co/100x100/475569/cbd5e1?text=N/A', subjects: new Map() }]));
+            
+            teachersMap.forEach(teacher => {
                 const classObj = classesMap.get(teacher.classId);
-                if (classObj) {
-                    const teacherObj = {
-                        id: teacher.id,
-                        name: teacher.name,
-                        picture: teacher.picture || 'https://placehold.co/100x100/475569/cbd5e1?text=N/A', // Updated placeholder color for dark theme
-                        lectures: []
-                    };
-                    teachersMap.set(teacher.id, teacherObj);
-                    classObj.teachers.push(teacherObj);
-                } else {
-                    console.warn(`Teacher ${teacher.name} references non-existent Class ID: ${teacher.classId}`);
-                }
+                if (classObj) classObj.teachers.push(teacher);
             });
 
-            // Link Lectures to Teachers, including Urdu links
-            rawData.lectures.forEach(lecture => {
+            (rawData.lectures || []).forEach(lecture => {
                 const teacherObj = teachersMap.get(lecture.teacherId);
                 if (teacherObj) {
-                    teacherObj.lectures.push({
-                        id: lecture.id,
-                        number: parseInt(lecture.number) || 0, // Ensure number is integer
-                        title: lecture.title,
-                        contentUrl: lecture.contentUrl,
-                        downloadUrl: lecture.downloadUrl,
-                        audioUrl: lecture.audioUrl,
-                        videoUrl: lecture.videoUrl || '', // New: Video URL
-                        contentUrlUrdu: lecture.contentUrlUrdu || '', // New: Urdu content URL
-                        downloadUrlUrdu: lecture.downloadUrlUrdu || '', // New: Urdu download URL
-                        audioUrlUrdu: lecture.audioUrlUrdu || '', // New: Urdu audio URL
-                        videoUrlUrdu: lecture.videoUrlUrdu || '' // New: Urdu video URL
-                    });
-                } else {
-                    console.warn(`Lecture ${lecture.title} references non-existent Teacher ID: ${lecture.teacherId}`);
+                    const subjectName = lecture.subject || 'General';
+                    if (!teacherObj.subjects.has(subjectName)) teacherObj.subjects.set(subjectName, { name: subjectName, lectures: [] });
+                    teacherObj.subjects.get(subjectName).lectures.push({ ...lecture, number: parseInt(lecture.number) || 0 });
                 }
             });
 
-            // Sort lectures by number for consistent display
             teachersMap.forEach(teacher => {
-                teacher.lectures.sort((a, b) => a.number - b.number);
+                teacher.subjects = Array.from(teacher.subjects.values()).sort((a, b) => a.name.localeCompare(b.name));
+                teacher.subjects.forEach(subject => subject.lectures.sort((a, b) => a.number - b.number));
             });
 
             return Array.from(classesMap.values());
         }
 
-        /**
-         * Renders the list of classes.
-         */
         function renderClasses() {
-            classesContainer.innerHTML = ''; // Clear previous content
-            if (lecturePortalData.length === 0) {
-                classesContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No classes available.</p>';
-            } else {
-                lecturePortalData.forEach(cls => {
-                    const classCard = `
-                        <div class="bg-slate-600 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-500" data-class-id="${cls.id}">
-                            <div>
-                                <h3 class="text-white text-xl font-semibold mb-2">${cls.name}</h3>
-                                <p class="text-slate-300 text-sm">${cls.teachers.length} Teachers</p>
-                            </div>
-                            <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">View Teachers</button>
-                        </div>
-                    `;
-                    classesContainer.innerHTML += classCard;
-                });
-
-                // Add event listeners to class cards
-                document.querySelectorAll('#classes-container > div').forEach(card => {
-                    card.querySelector('button').addEventListener('click', (e) => { // Attach to button
-                        e.stopPropagation(); // Prevent card click from propagating
-                        const classId = e.currentTarget.closest('[data-class-id]').dataset.classId;
-                        currentClass = lecturePortalData.find(cls => cls.id === classId);
-                        renderTeachers(currentClass);
-                    });
-                });
-            }
-
-
-            // Update UI visibility
-            classesSection.classList.remove('hidden');
-            teachersSection.classList.add('hidden');
-            lecturesSection.classList.add('hidden');
-            lectureViewModal.classList.add('hidden');
-            hideModalImmediately(); // Ensure modal is fully hidden
-
-            // Update breadcrumbs
-            breadcrumbHome.classList.remove('hidden');
-            breadcrumbClass.classList.add('hidden');
-            breadcrumbTeacher.classList.add('hidden');
+            const container = DOMElements.containers.classes;
+            container.innerHTML = state.portalData.map(cls => `
+                <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${cls.id}">
+                    <div><h3 class="text-white text-xl font-semibold mb-2">${cls.name}</h3><p class="text-slate-300 text-sm">${cls.teachers.length} Teachers</p></div>
+                    <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Teachers</button>
+                </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No classes available.</p>';
+            showSection('classes');
         }
 
-        /**
-         * Renders the list of teachers for a given class.
-         * @param {Object} cls - The class object.
-         */
         function renderTeachers(cls) {
-            teachersContainer.innerHTML = ''; // Clear previous content
-            currentClassName.textContent = cls.name;
+            state.currentClass = cls;
+            DOMElements.labels.className.textContent = cls.name;
+            const container = DOMElements.containers.teachers;
+            container.innerHTML = cls.teachers.map(t => `
+                <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col items-center text-center border border-slate-500" data-id="${t.id}">
+                    <img src="${t.picture}" alt="${t.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400" onerror="this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A'">
+                    <h3 class="text-white text-xl font-semibold mb-1">${t.name}</h3><p class="text-slate-300 text-sm">${t.subjects.length} Subjects</p>
+                    <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Subjects</button>
+                </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No teachers for this class.</p>';
+            showSection('teachers');
+        }
+        
+        function renderSubjects(teacher) {
+            state.currentTeacher = teacher;
+            DOMElements.labels.teacherNameForSubjects.textContent = teacher.name;
+            const container = DOMElements.containers.subjects;
+            container.innerHTML = teacher.subjects.map(s => `
+                 <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${s.name}">
+                    <div><h3 class="text-white text-xl font-semibold mb-2">${s.name}</h3><p class="text-slate-300 text-sm">${s.lectures.length} Lectures</p></div>
+                    <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Lectures</button>
+                </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No subjects for this teacher.</p>';
+            showSection('subjects');
+        }
 
-            // Clear search input when changing teachers
-            lectureSearchInput.value = '';
+        function renderLectures(subject, searchQuery = '') {
+            state.currentSubject = subject;
+            DOMElements.labels.subjectName.textContent = subject.name;
+            DOMElements.labels.teacherName.textContent = state.currentTeacher.name;
+            const lectures = searchQuery ? subject.lectures.filter(l => l.title.toLowerCase().includes(searchQuery.toLowerCase())) : subject.lectures;
+            const container = DOMElements.containers.lectures;
+            container.innerHTML = lectures.map(l => `
+                <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${l.id}">
+                    <div><h3 class="text-white text-xl font-semibold mb-2">Lecture ${l.number}: ${l.title}</h3></div>
+                    <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition view-lecture-btn">View Lecture</button>
+                </div>`).join('') || `<p class="text-slate-300 text-center col-span-full py-8 text-lg">No lectures found.</p>`;
+            showSection('lectures');
+        }
+        
+        function showSection(sectionName) {
+            Object.values(DOMElements.sections).forEach(s => s.classList.add('hidden'));
+            const section = DOMElements.sections[sectionName];
+            section.classList.remove('hidden');
+            section.classList.add('section-fade-in');
+            section.onanimationend = () => section.classList.remove('section-fade-in');
+            
+            hideModal();
+            if (sectionName !== 'lectures') DOMElements.search.input.value = '';
+            updateBreadcrumbs();
+        }
 
-            // Defensive check for cls and cls.teachers
-            if (!cls || !Array.isArray(cls.teachers) || cls.teachers.length === 0) {
-                teachersContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No teachers available for this class yet.</p>';
-                // Ensure UI visibility is set correctly for this case
-                classesSection.classList.add('hidden');
-                teachersSection.classList.remove('hidden'); // This section should be visible
-                lecturesSection.classList.add('hidden');
-                lectureViewModal.classList.add('hidden');
-                hideModalImmediately();
-                breadcrumbHome.classList.remove('hidden');
-                breadcrumbClass.classList.remove('hidden');
-                breadcrumbClass.querySelector('span').textContent = cls ? cls.name : 'Unknown Class';
-                breadcrumbTeacher.classList.add('hidden');
-                return; // Exit if no valid teachers array
+        function updateBreadcrumbs() {
+            const { home, class: cls, teacher, subject } = DOMElements.breadcrumbs;
+            cls.classList.toggle('hidden', !state.currentClass);
+            if (state.currentClass) cls.querySelector('span:last-child').textContent = state.currentClass.name;
+            
+            teacher.classList.toggle('hidden', !state.currentTeacher);
+            if (state.currentTeacher) teacher.querySelector('span:last-child').textContent = state.currentTeacher.name;
+            
+            subject.classList.toggle('hidden', !state.currentSubject);
+            if (state.currentSubject) subject.querySelector('span:last-child').textContent = state.currentSubject.name;
+        }
+
+        function updateModalContent(lang) {
+            if (!state.currentLecture) return;
+            const l = state.currentLecture;
+            const isUrdu = lang === 'urdu';
+            const contentUrl = isUrdu ? l.contentUrlUrdu || l.contentUrl : l.contentUrl;
+            const downloadUrl = isUrdu ? l.downloadUrlUrdu || l.downloadUrl : l.downloadUrl;
+            const audioUrl = isUrdu ? l.audioUrlUrdu || l.audioUrl : l.audioUrl;
+            const videoUrl = isUrdu ? l.videoUrlUrdu || l.videoUrl : l.videoUrl;
+
+            DOMElements.modal.videoContainer.classList.toggle('hidden', !videoUrl);
+            if (videoUrl) { DOMElements.modal.videoPlayer.src = videoUrl; DOMElements.modal.videoPlayer.load(); DOMElements.modal.videoPlayer.pause(); }
+
+            DOMElements.modal.audioContainer.classList.toggle('hidden', !audioUrl);
+            if (audioUrl) { DOMElements.modal.audioPlayer.src = audioUrl; DOMElements.modal.audioPlayer.load(); DOMElements.modal.audioPlayer.pause(); }
+
+            DOMElements.modal.viewLink.href = contentUrl || '#';
+            DOMElements.modal.downloadLink.href = downloadUrl || '#';
+            DOMElements.modal.downloadLink.download = `${l.title.replace(/\s/g, '_')}_${lang}.pdf`;
+            
+            DOMElements.modal.langEnglishBtn.classList.toggle('ring-2', !isUrdu);
+            DOMElements.modal.langUrduBtn.classList.toggle('ring-2', isUrdu);
+        }
+
+        function showModal(lecture) {
+            state.currentLecture = lecture;
+            DOMElements.modal.title.textContent = `Lecture ${lecture.number}: ${lecture.title}`;
+            updateModalContent('english');
+            DOMElements.modal.main.classList.remove('hidden');
+            setTimeout(() => DOMElements.modal.content.classList.remove('scale-95', 'opacity-0'), 10);
+        }
+
+        function hideModal(immediate = false) {
+            DOMElements.modal.audioPlayer.pause();
+            DOMElements.modal.videoPlayer.pause();
+            if (immediate) {
+                DOMElements.modal.main.classList.add('hidden');
+            } else {
+                DOMElements.modal.content.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => DOMElements.modal.main.classList.add('hidden'), 300);
             }
+        }
 
-            // Only proceed with forEach if cls.teachers is a valid non-empty array
-            cls.teachers.forEach(teacher => {
-                // Defensive check for teacher object integrity inside the loop
-                if (!teacher || typeof teacher !== 'object' || !teacher.id || !teacher.name) {
-                    console.warn("Skipping invalid or incomplete teacher entry:", teacher);
-                    return; // Skip this iteration if teacher object is malformed
-                }
-                const teacherCard = `
-                        <div class="bg-slate-600 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col items-center text-center card-hover border border-slate-500" data-teacher-id="${teacher.id}">
-                            <img src="${teacher.picture}" alt="${teacher.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400 shadow-md transform transition-transform duration-200 hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A';">
-                            <h3 class="text-white text-xl font-semibold mb-1">${teacher.name}</h3>
-                            <p class="text-slate-300 text-sm">${teacher.lectures.length} Lectures</p>
-                            <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">View Lectures</button>
-                        </div>
-                    `;
-                teachersContainer.innerHTML += teacherCard;
-            });
-
-            // Add event listeners to teacher cards
-            document.querySelectorAll('#teachers-container > div').forEach(card => {
-                card.querySelector('button').addEventListener('click', (e) => { // Attach to button
-                    e.stopPropagation(); // Prevent card click from propagating
-                    const teacherId = e.currentTarget.closest('[data-teacher-id]').dataset.teacherId;
-                    currentTeacher = cls.teachers.find(t => t.id === teacherId);
-                    renderLectures(currentTeacher);
+        function setupEventListeners() {
+            // Event Delegation for all containers
+            Object.values(DOMElements.containers).forEach(container => {
+                container.addEventListener('click', (e) => {
+                    const button = e.target.closest('button');
+                    if (!button) return;
+                    const card = e.target.closest('[data-id]');
+                    if (!card) return;
+                    
+                    const id = card.dataset.id;
+                    switch(container.id) {
+                        case 'classes-container':
+                            const cls = state.portalData.find(c => c.id === id);
+                            if (cls) renderTeachers(cls);
+                            break;
+                        case 'teachers-container':
+                            const teacher = state.currentClass.teachers.find(t => t.id === id);
+                            if (teacher) renderSubjects(teacher);
+                            break;
+                        case 'subjects-container':
+                             const subject = state.currentTeacher.subjects.find(s => s.name === id);
+                             if (subject) renderLectures(subject);
+                            break;
+                        case 'lectures-container':
+                            const lecture = state.currentSubject.lectures.find(l => l.id === id);
+                            if (lecture) showModal(lecture);
+                            break;
+                    }
                 });
             });
 
-            // Update UI visibility
-            classesSection.classList.add('hidden');
-            teachersSection.classList.remove('hidden');
-            lecturesSection.classList.add('hidden');
-            lectureViewModal.classList.add('hidden');
-            hideModalImmediately(); // Ensure modal is fully hidden
+            // Modal
+            DOMElements.modal.closeBtn.addEventListener('click', () => hideModal());
+            DOMElements.modal.main.addEventListener('click', (e) => { if (e.target === DOMElements.modal.main) hideModal(); });
+            DOMElements.modal.langEnglishBtn.addEventListener('click', () => updateModalContent('english'));
+            DOMElements.modal.langUrduBtn.addEventListener('click', () => updateModalContent('urdu'));
 
-            // Update breadcrumbs
-            breadcrumbHome.classList.remove('hidden');
-            breadcrumbClass.classList.remove('hidden');
-            breadcrumbClass.querySelector('span').textContent = cls.name;
-            breadcrumbTeacher.classList.add('hidden');
+            // Search
+            DOMElements.search.input.addEventListener('keyup', e => renderLectures(state.currentSubject, e.target.value));
+            DOMElements.search.clearBtn.addEventListener('click', () => {
+                DOMElements.search.input.value = '';
+                renderLectures(state.currentSubject);
+            });
+
+            // Breadcrumbs
+            DOMElements.breadcrumbs.home.addEventListener('click', () => { state.currentClass = state.currentTeacher = state.currentSubject = null; renderClasses(); });
+            DOMElements.breadcrumbs.class.addEventListener('click', () => { state.currentTeacher = state.currentSubject = null; renderTeachers(state.currentClass); });
+            DOMElements.breadcrumbs.teacher.addEventListener('click', () => { state.currentSubject = null; renderSubjects(state.currentTeacher); });
         }
 
-        /**
-         * Renders the list of lectures for a given teacher, with optional search filtering.
-         * @param {Object} teacher - The teacher object.
-         * @param {string} [searchQuery=''] - Optional search query to filter lectures.
-         */
-        function renderLectures(teacher, searchQuery = '') {
-            lecturesContainer.innerHTML = ''; // Clear previous content
-            currentTeacherName.textContent = teacher.name;
-
-            let lecturesToDisplay = teacher.lectures;
-
-            // Apply search filter if a query is provided
-            if (searchQuery) {
-                const lowerCaseQuery = searchQuery.toLowerCase();
-                lecturesToDisplay = teacher.lectures.filter(lecture =>
-                    lecture.title.toLowerCase().includes(lowerCaseQuery)
-                );
-            }
-
-            if (lecturesToDisplay.length === 0) {
-                lecturesContainer.innerHTML = '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No lectures found for this teacher' + (searchQuery ? ` matching "${searchQuery}"` : ' yet.') + '</p>';
-            } else {
-                lecturesToDisplay.forEach(lecture => {
-                    const lectureCard = `
-                        <div class="bg-slate-600 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer flex flex-col justify-between card-hover border border-slate-500" data-lecture-id="${lecture.id}">
-                            <div>
-                                <h3 class="text-white text-xl font-semibold mb-2">Lecture ${lecture.number}: ${lecture.title}</h3>
-                            </div>
-                            <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition duration-300 shadow-md transform hover:scale-105 active:scale-95 view-lecture-btn">View Lecture</button>
-                        </div>
-                    `;
-                    lecturesContainer.innerHTML += lectureCard;
-                });
-
-                // Add event listeners to lecture cards
-                document.querySelectorAll('.view-lecture-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent card click from propagating
-                        const lectureId = e.currentTarget.closest('[data-lecture-id]').dataset.lectureId;
-                        const selectedLecture = teacher.lectures.find(lec => lec.id === lectureId);
-                        showLectureModal(selectedLecture);
-                    });
-                });
-            }
-
-            // Update UI visibility
-            classesSection.classList.add('hidden');
-            teachersSection.classList.add('hidden');
-            lecturesSection.classList.remove('hidden');
-            lectureViewModal.classList.add('hidden');
-            hideModalImmediately(); // Ensure modal is fully hidden
-
-            // Update breadcrumbs
-            breadcrumbHome.classList.remove('hidden');
-            breadcrumbClass.classList.remove('hidden');
-            breadcrumbTeacher.classList.remove('hidden');
-            breadcrumbTeacher.querySelector('span').textContent = teacher.name;
-        }
-
-        /**
-         * Updates the lecture content (audio, video, view, download links) based on selected language.
-         * @param {string} lang - 'english' or 'urdu'
-         */
-        function updateLectureContent(lang) {
-            if (!currentSelectedLecture) return; // Ensure a lecture is selected
-
-            let contentUrl, downloadUrl, audioUrl, videoUrl;
-
-            if (lang === 'english') {
-                contentUrl = currentSelectedLecture.contentUrl;
-                downloadUrl = currentSelectedLecture.downloadUrl;
-                audioUrl = currentSelectedLecture.audioUrl;
-                videoUrl = currentSelectedLecture.videoUrl; // Get English video URL
-            } else if (lang === 'urdu') {
-                // Fallback to English if Urdu content is not available
-                contentUrl = currentSelectedLecture.contentUrlUrdu || currentSelectedLecture.contentUrl;
-                downloadUrl = currentSelectedLecture.downloadUrlUrdu || currentSelectedLecture.downloadUrl;
-                audioUrl = currentSelectedLecture.audioUrlUrdu || currentSelectedLecture.audioUrl;
-                videoUrl = currentSelectedLecture.videoUrlUrdu || currentSelectedLecture.videoUrl; // Get Urdu video URL with English fallback
-            }
-
-            // Handle Video Player
-            if (videoUrl) {
-                lectureVideoPlayer.src = videoUrl;
-                lectureVideoPlayer.load();
-                lectureVideoPlayer.pause(); // Pause any currently playing video
-                lectureVideoPlayerContainer.classList.remove('hidden');
-            } else {
-                lectureVideoPlayer.pause(); // Pause if no video
-                lectureVideoPlayer.removeAttribute('src'); // Clear src
-                lectureVideoPlayerContainer.classList.add('hidden');
-            }
-
-            // Handle Audio Player
-            if (audioUrl) {
-                lectureAudioPlayer.src = audioUrl;
-                lectureAudioPlayer.load(); // Load the audio
-                lectureAudioPlayer.pause(); // Pause any currently playing audio
-                lectureAudioPlayerContainer.classList.remove('hidden');
-            } else {
-                lectureAudioPlayer.pause(); // Pause if no audio
-                lectureAudioPlayer.removeAttribute('src'); // Clear src
-                lectureAudioPlayerContainer.classList.add('hidden');
-            }
-
-            // Hide both if neither is available
-            if (!videoUrl && !audioUrl) {
-                 // You might want to show a message here or just let both be hidden
-            }
-
-
-            lectureViewLink.href = contentUrl;
-            lectureViewLink.target = "_blank"; // This makes it open in a new tab
-
-            lectureDownloadLink.href = downloadUrl;
-            // Dynamic download filename based on language
-            lectureDownloadLink.download = `${currentSelectedLecture.title.replace(/\s/g, '_')}_${lang}.pdf`;
-
-             // Update active button styling for language selection
-             langEnglishBtn.classList.remove('bg-blue-700', 'border', 'border-white');
-             langUrduBtn.classList.remove('bg-green-700', 'border', 'border-white');
-
-            if (lang === 'english') {
-                langEnglishBtn.classList.add('bg-blue-700', 'border', 'border-white');
-            } else {
-                langUrduBtn.classList.add('bg-green-700', 'border', 'border-white');
-            }
-        }
-
-
-        /**
-         * Displays the lecture modal with content and audio/video player.
-         * @param {Object} lecture - The lecture object.
-         */
-        function showLectureModal(lecture) {
-            currentSelectedLecture = lecture; // Store the selected lecture
-            lectureModalTitle.textContent = lecture.title;
-
-            // Default to English content when modal opens
-            updateLectureContent('english'); // Set initial language to English
-
-            lectureViewModal.classList.remove('hidden');
-            // Animate modal in
-            setTimeout(() => {
-                lectureViewModal.querySelector('div').classList.remove('scale-90', 'opacity-0');
-                lectureViewModal.querySelector('div').classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        /**
-         * Hides the lecture modal.
-         */
-        function hideLectureModal() {
-            lectureAudioPlayer.pause(); // Stop audio when closing modal
-            lectureVideoPlayer.pause(); // Stop video when closing modal (NEW)
-            lectureViewModal.querySelector('div').classList.add('scale-90', 'opacity-0');
-            lectureViewModal.querySelector('div').classList.remove('scale-100', 'opacity-100');
-            setTimeout(() => {
-                lectureViewModal.classList.add('hidden');
-            }, 300); // Allow animation to finish
-        }
-
-        // Helper to hide modal immediately without transition
-        function hideModalImmediately() {
-            lectureAudioPlayer.pause();
-            lectureVideoPlayer.pause(); // Pause video immediately (NEW)
-            lectureViewModal.classList.add('hidden');
-            lectureViewModal.querySelector('div').classList.add('scale-90', 'opacity-0');
-            lectureViewModal.querySelector('div').classList.remove('scale-100', 'opacity-100');
-        }
-
-        // Event listeners for modal
-        closeModalBtn.addEventListener('click', hideLectureModal);
-        lectureViewModal.addEventListener('click', (e) => {
-            if (e.target === lectureViewModal) { // Close if clicked outside the modal content
-                hideLectureModal();
-            }
-        });
-
-        // Event listeners for language selection buttons
-        langEnglishBtn.addEventListener('click', () => updateLectureContent('english'));
-        langUrduBtn.addEventListener('click', () => updateLectureContent('urdu'));
-
-        // New: Event listeners for search
-        lectureSearchInput.addEventListener('keyup', (e) => {
-            if (currentTeacher) { // Only filter if a teacher is selected
-                renderLectures(currentTeacher, e.target.value);
-            }
-        });
-
-        clearSearchBtn.addEventListener('click', () => {
-            lectureSearchInput.value = '';
-            if (currentTeacher) {
-                renderLectures(currentTeacher); // Re-render without filter
-            }
-        });
-
-
-        // Breadcrumb Navigation
-        breadcrumbHome.addEventListener('click', renderClasses);
-        breadcrumbClass.querySelector('span').addEventListener('click', () => {
-            if (currentClass) {
-                renderTeachers(currentClass);
-            }
-        });
-        breadcrumbTeacher.querySelector('span').addEventListener('click', () => {
-            if (currentTeacher) {
-                // When navigating back to teacher's lectures, clear search input
-                lectureSearchInput.value = '';
-                renderLectures(currentTeacher);
-            }
-        });
-
-        // Initialize the app by fetching data and then rendering classes
         document.addEventListener('DOMContentLoaded', async () => {
-            lecturePortalData = await fetchDataFromGoogleSheet();
-            if (lecturePortalData.length === 0) {
-                // If no data loaded (e.g., due to URL not being set), show instruction
-                urlInstruction.classList.remove('hidden');
-            } else {
+            setupEventListeners();
+            state.portalData = await fetchData();
+            if (state.portalData.length > 0) {
                 renderClasses();
             }
         });
     </script>
 </body>
 </html>
+
