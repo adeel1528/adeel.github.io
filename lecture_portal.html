@@ -18,8 +18,8 @@
             background-size: 20px 20px; /* Adjust grid size */
         }
         /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #334155; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
@@ -46,7 +46,7 @@
             box-shadow: 0 0 20px rgba(252, 211, 77, 0.4), 0 10px 20px rgba(0, 0, 0, 0.2);
         }
         
-        /* New: Fade-in animation for sections */
+        /* Fade-in animation for sections */
         .section-fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -55,10 +55,35 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* New styles for horizontal scrolling */
+        .horizontal-scroll-wrapper {
+            overflow-x: auto;
+            padding-bottom: 1rem; /* Space for the scrollbar */
+        }
+        .card-container {
+            display: flex;
+            gap: 2rem; /* 32px */
+        }
+        .card-container > .card-hover {
+            flex-shrink: 0;
+            width: calc( (100% / 3) - (4rem / 3) ); /* 3 cards with 2rem gap */
+        }
+        @media (max-width: 1024px) {
+            .card-container > .card-hover {
+                width: calc( (100% / 2) - (2rem / 2) ); /* 2 cards */
+            }
+        }
+        @media (max-width: 767px) {
+            .card-container > .card-hover {
+                width: 280px; /* Fixed width on mobile for better scrolling */
+            }
+        }
+
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
-    <div id="app" class="bg-slate-700 rounded-2xl p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out">
+    <div id="app" class="bg-slate-700 rounded-2xl p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out relative overflow-hidden">
         <!-- College Logo -->
         <div class="flex justify-center mb-6">
             <img src="https://bgmchurch.org/wp-content/uploads/elementor/thumbs/bgm-bluelogo-qzshc087trea6hnhp0uqc6aifp2s383kxpbmzskp9k.png" alt="College Logo" class="w-28 h-28 rounded-full border-4 border-amber-400 shadow-lg object-cover">
@@ -105,19 +130,19 @@
         <!-- Section for Classes -->
         <div id="classes-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Classes</h2>
-            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div class="horizontal-scroll-wrapper"><div id="classes-container" class="card-container"></div></div>
         </div>
 
         <!-- Section for Teachers -->
         <div id="teachers-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Teachers for <span id="current-class-name" class="text-amber-400 font-bold"></span></h2>
-            <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div class="horizontal-scroll-wrapper"><div id="teachers-container" class="card-container"></div></div>
         </div>
         
         <!-- Section for Subjects -->
         <div id="subjects-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Subjects by <span id="current-teacher-name-for-subjects" class="text-amber-400 font-bold"></span></h2>
-            <div id="subjects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div class="horizontal-scroll-wrapper"><div id="subjects-container" class="card-container"></div></div>
         </div>
 
         <!-- Section for Lectures -->
@@ -127,12 +152,12 @@
                 <input type="text" id="lecture-search-input" placeholder="Lectures search karein..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border border-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500">
                 <button id="clear-search-btn" class="bg-slate-500 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-600 transition duration-300 shadow-md">Clear Search</button>
             </div>
-            <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div class="horizontal-scroll-wrapper"><div id="lectures-container" class="card-container"></div></div>
         </div>
 
         <!-- Lecture View Modal -->
-        <div id="lecture-view-modal" class="fixed inset-0 bg-black bg-opacity-75 p-4 hidden z-50 transition-opacity duration-300 ease-out">
-            <div class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
+        <div id="lecture-view-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4">
+            <div id="modal-content" class="absolute bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
                 <div class="flex justify-between items-center mb-5">
                     <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
                     <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
@@ -173,6 +198,7 @@
         };
 
         const DOMElements = {
+            app: document.getElementById('app'),
             sections: {
                 classes: document.getElementById('classes-section'),
                 teachers: document.getElementById('teachers-section'),
@@ -199,7 +225,7 @@
             },
             modal: {
                 main: document.getElementById('lecture-view-modal'),
-                content: document.getElementById('lecture-view-modal').querySelector('div'),
+                content: document.getElementById('modal-content'),
                 title: document.getElementById('lecture-modal-title'),
                 closeBtn: document.getElementById('close-modal-btn'),
                 langEnglishBtn: document.getElementById('lang-english-btn'),
@@ -375,33 +401,41 @@
             const modalContent = DOMElements.modal.content;
             const cardElement = event.target.closest('[data-id]');
             
-            const cardRect = cardElement.getBoundingClientRect();
-            
-            modalContent.style.position = 'absolute';
-            
-            const modalMaxWidth = 672; // max-w-2xl
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+            // For mobile screens, or if something goes wrong, center the modal.
+            if (window.innerWidth < 768 || !cardElement) {
+                DOMElements.modal.main.classList.add('items-center', 'justify-center');
+                modalContent.style.position = '';
+                modalContent.style.top = '';
+                modalContent.style.left = '';
+            } else {
+                // On larger screens, position relative to the card.
+                DOMElements.modal.main.classList.remove('items-center', 'justify-center');
+                modalContent.style.position = 'absolute';
 
-            let left = cardRect.left;
-            if (left + modalMaxWidth > viewportWidth) {
-                left = viewportWidth - modalMaxWidth - 16; 
+                const appRect = DOMElements.app.getBoundingClientRect();
+                const cardRect = cardElement.getBoundingClientRect();
+                
+                const modalWidth = modalContent.offsetWidth;
+                const modalHeight = modalContent.offsetHeight;
+
+                // Calculate position to center modal on the card, relative to the #app container
+                let top = (cardRect.top - appRect.top) + (cardRect.height / 2) - (modalHeight / 2);
+                let left = (cardRect.left - appRect.left) + (cardRect.width / 2) - (modalWidth / 2);
+
+                const padding = 24; // A safe padding value
+
+                // Keep the modal inside the #app container's boundaries
+                left = Math.max(padding, Math.min(left, appRect.width - modalWidth - padding));
+                top = Math.max(padding, Math.min(top, appRect.height - modalHeight - padding));
+                
+                modalContent.style.top = `${top}px`;
+                modalContent.style.left = `${left}px`;
             }
-            if (left < 16) left = 16;
-
-            let top = cardRect.top;
-            // A simple check to keep it on screen vertically
-            const modalApproxHeight = 600; 
-            if (top + modalApproxHeight > viewportHeight) {
-                top = viewportHeight - modalApproxHeight - 16;
-            }
-            if (top < 16) top = 16;
-
-            modalContent.style.left = `${left}px`;
-            modalContent.style.top = `${top}px`;
-
+            
             DOMElements.modal.main.classList.remove('hidden');
-            setTimeout(() => DOMElements.modal.content.classList.remove('scale-95', 'opacity-0'), 10);
+            setTimeout(() => {
+                 modalContent.classList.remove('scale-95', 'opacity-0');
+            }, 10);
         }
 
         function hideModal(immediate = false) {
@@ -409,15 +443,14 @@
             DOMElements.modal.videoPlayer.pause();
             
             const modalContent = DOMElements.modal.content;
-            modalContent.style.position = '';
-            modalContent.style.top = '';
-            modalContent.style.left = '';
-
+            
             if (immediate) {
                 DOMElements.modal.main.classList.add('hidden');
             } else {
                 modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => DOMElements.modal.main.classList.add('hidden'), 300);
+                setTimeout(() => {
+                    DOMElements.modal.main.classList.add('hidden');
+                }, 300);
             }
         }
 
@@ -446,7 +479,7 @@
                             break;
                         case 'lectures-container':
                             const lecture = state.currentSubject.lectures.find(l => l.id === id);
-                            if (lecture) showModal(lecture, e);
+                            if (lecture) showModal(lecture, e); // Pass the event object
                             break;
                     }
                 });
@@ -454,7 +487,9 @@
 
             // Modal
             DOMElements.modal.closeBtn.addEventListener('click', () => hideModal());
-            DOMElements.modal.main.addEventListener('click', (e) => { if (e.target === DOMElements.modal.main) hideModal(); });
+            DOMElements.modal.main.addEventListener('click', (e) => { 
+                if (e.target === DOMElements.modal.main) hideModal();
+            });
             DOMElements.modal.langEnglishBtn.addEventListener('click', () => updateModalContent('english'));
             DOMElements.modal.langUrduBtn.addEventListener('click', () => updateModalContent('urdu'));
 
