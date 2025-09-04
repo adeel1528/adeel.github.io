@@ -55,31 +55,6 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* New styles for horizontal scrolling */
-        .horizontal-scroll-wrapper {
-            overflow-x: auto;
-            padding-bottom: 1rem; /* Space for the scrollbar */
-        }
-        .card-container {
-            display: flex;
-            gap: 2rem; /* 32px */
-        }
-        .card-container > .card-hover {
-            flex-shrink: 0;
-            width: calc( (100% / 3) - (4rem / 3) ); /* 3 cards with 2rem gap */
-        }
-        @media (max-width: 1024px) {
-            .card-container > .card-hover {
-                width: calc( (100% / 2) - (2rem / 2) ); /* 2 cards */
-            }
-        }
-        @media (max-width: 767px) {
-            .card-container > .card-hover {
-                width: 280px; /* Fixed width on mobile for better scrolling */
-            }
-        }
-
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -130,19 +105,19 @@
         <!-- Section for Classes -->
         <div id="classes-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Classes</h2>
-            <div class="horizontal-scroll-wrapper"><div id="classes-container" class="card-container"></div></div>
+            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
 
         <!-- Section for Teachers -->
         <div id="teachers-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Teachers for <span id="current-class-name" class="text-amber-400 font-bold"></span></h2>
-            <div class="horizontal-scroll-wrapper"><div id="teachers-container" class="card-container"></div></div>
+            <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
         
         <!-- Section for Subjects -->
         <div id="subjects-section" class="hidden">
             <h2 class="text-2xl font-semibold text-slate-200 mb-6">Subjects by <span id="current-teacher-name-for-subjects" class="text-amber-400 font-bold"></span></h2>
-            <div class="horizontal-scroll-wrapper"><div id="subjects-container" class="card-container"></div></div>
+            <div id="subjects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
 
         <!-- Section for Lectures -->
@@ -152,7 +127,7 @@
                 <input type="text" id="lecture-search-input" placeholder="Lectures search karein..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border border-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500">
                 <button id="clear-search-btn" class="bg-slate-500 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-600 transition duration-300 shadow-md">Clear Search</button>
             </div>
-            <div class="horizontal-scroll-wrapper"><div id="lectures-container" class="card-container"></div></div>
+            <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
 
         <!-- Lecture View Modal -->
