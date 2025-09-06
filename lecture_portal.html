@@ -244,10 +244,6 @@
             <!-- Section for Classes -->
             <div id="classes-section" class="hidden">
                 <h2 class="text-2xl font-semibold text-slate-200 mb-6">Classes</h2>
-                <div class="mb-6 flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="home-search-input" placeholder="Search for subjects..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border focus:outline-none">
-                    <button id="home-clear-search-btn" class="bg-slate-500 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-600 transition duration-300 shadow-md">Clear Search</button>
-                </div>
                 <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
     
@@ -341,8 +337,7 @@
             currentClass: null,
             currentTeacher: null,
             currentSubject: null,
-            currentLecture: null,
-            allSubjects: [] // Added to store a flat list of all subjects
+            currentLecture: null
         };
 
         const DOMElements = {
@@ -397,9 +392,7 @@
             search: {
                 input: document.getElementById('lecture-search-input'),
                 clearBtn: document.getElementById('clear-search-btn'),
-                resultCount: document.getElementById('search-result-count'),
-                homeInput: document.getElementById('home-search-input'),
-                homeClearBtn: document.getElementById('home-clear-search-btn')
+                resultCount: document.getElementById('search-result-count')
             },
             indicators: {
                 loading: document.getElementById('loading-indicator'),
@@ -443,8 +436,6 @@
             const teachersMap = new Map((rawData.teachers || []).map(t => [t.id, { ...t, picture: t.picture || 'https://placehold.co/100x100/475569/cbd5e1?text=N/A', subjects: new Map() }]));
             const lecturesMap = new Map((rawData.lectures || []).map(l => [l.id, l]));
 
-            let allSubjects = [];
-
             lecturesMap.forEach(lecture => {
                 const teacherObj = teachersMap.get(lecture.teacherId);
                 if (teacherObj) {
@@ -458,14 +449,7 @@
 
             teachersMap.forEach(teacher => {
                 teacher.subjects = Array.from(teacher.subjects.values()).sort((a, b) => a.name.localeCompare(b.name));
-                teacher.subjects.forEach(subject => {
-                    subject.lectures.sort((a, b) => a.number - b.number);
-                    allSubjects.push({ 
-                        name: subject.name,
-                        lectures: subject.lectures,
-                        teacher: { id: teacher.id, name: teacher.name } 
-                    });
-                });
+                teacher.subjects.forEach(subject => subject.lectures.sort((a, b) => a.number - b.number));
             });
 
             teachersMap.forEach(teacher => {
@@ -484,9 +468,6 @@
             classesMap.forEach(classObj => {
                 classObj.teachers.sort((a, b) => a.name.localeCompare(b.name));
             });
-
-            // Set the global state for all subjects
-            state.allSubjects = allSubjects;
 
             return Array.from(classesMap.values());
         }
@@ -532,7 +513,7 @@
         function renderLectures(subject, searchQuery = '') {
             state.currentSubject = subject;
             DOMElements.labels.subjectName.textContent = subject.name;
-            DOMElements.labels.teacherName.textContent = state.currentTeacher?.name || 'All Teachers';
+            DOMElements.labels.teacherName.textContent = state.currentTeacher.name;
             
             const lowerCaseQuery = searchQuery.toLowerCase();
             const lectures = searchQuery 
@@ -568,21 +549,6 @@
                     <button class="mt-0 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition view-lecture-btn">View Lecture</button>
                 </div>`).join('') || `<p class="text-slate-300 text-center col-span-full py-8 text-lg">No lectures found.</p>`;
             showSection('lectures');
-        }
-        
-        // New function to render subjects from home search
-        function renderSubjectsFromSearch(subjects) {
-            state.currentClass = null;
-            state.currentTeacher = null;
-            state.currentSubject = null; // Clear state
-            DOMElements.labels.teacherNameForSubjects.textContent = 'Search Results';
-            const container = DOMElements.containers.subjects;
-            container.innerHTML = subjects.map(s => `
-                <div class="card-hover card-subject p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500 subject-card-min-h" data-id="${s.name}">
-                    <div><h3 class="text-white text-xl font-semibold mb-2">${s.name}</h3><p class="text-slate-300 text-sm">${s.lectures.length} Lectures by ${s.teacher.name}</p></div>
-                    <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Lectures</button>
-                </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No subjects found matching your search.</p>';
-            showSection('subjects');
         }
         
         function showSection(sectionName) {
@@ -771,18 +737,6 @@
                             break;
                     }
                 });
-            });
-
-            // Home search
-            DOMElements.search.homeInput.addEventListener('keyup', e => {
-                if (e.key === 'Enter') {
-                    renderSearchResults(e.target.value);
-                }
-            });
-
-            DOMElements.search.homeClearBtn.addEventListener('click', () => {
-                DOMElements.search.homeInput.value = '';
-                renderClasses();
             });
 
             // Modal
