@@ -34,8 +34,8 @@
             filter: brightness(1.1);
         }
 
-        /* Styling for the audio player */
-        audio {
+        /* Styling for the audio/video player */
+        audio, video {
             width: 100%;
             border-radius: 10px;
             background-color: #475569;
@@ -66,7 +66,7 @@
             font-weight: 700;
         }
 
-        /* Glowing animation for the search bar */
+        /* New: Glowing animation for the search bar */
         #lecture-search-input {
             transition: all 0.3s ease-in-out;
             border-color: #f59e0b; /* amber-500 */
@@ -169,13 +169,14 @@
                         <button id="lang-urdu-btn" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">اردو (Urdu)</button>
                     </div>
                 </div>
-                
-                <!-- Audio Player -->
+                <div id="lecture-video-player-container" class="mb-5 hidden">
+                    <p class="text-slate-300 mb-2 font-semibold">Lecture Video:</p>
+                    <video id="lecture-video-player" controls preload="metadata"></video>
+                </div>
                 <div id="lecture-audio-player-container" class="mb-5 hidden">
                     <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
                     <audio id="lecture-audio-player" controls preload="metadata"></audio>
                 </div>
-
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition">View Content</a>
                     <a id="lecture-download-link" href="#" download class="flex-1 bg-amber-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-700 transition">Download</a>
@@ -229,6 +230,8 @@
                 closeBtn: document.getElementById('close-modal-btn'),
                 langEnglishBtn: document.getElementById('lang-english-btn'),
                 langUrduBtn: document.getElementById('lang-urdu-btn'),
+                videoContainer: document.getElementById('lecture-video-player-container'),
+                videoPlayer: document.getElementById('lecture-video-player'),
                 audioContainer: document.getElementById('lecture-audio-player-container'),
                 audioPlayer: document.getElementById('lecture-audio-player'),
                 viewLink: document.getElementById('lecture-view-link'),
@@ -267,28 +270,49 @@
                 DOMElements.indicators.loading.classList.add('hidden');
             }
         }
-
+        
+        // This is the function with major changes
         function processData(rawData) {
             const classesMap = new Map((rawData.classes || []).map(c => [c.id, { ...c, teachers: [] }]));
             const teachersMap = new Map((rawData.teachers || []).map(t => [t.id, { ...t, picture: t.picture || 'https://placehold.co/100x100/475569/cbd5e1?text=N/A', subjects: new Map() }]));
-            
-            teachersMap.forEach(teacher => {
-                const classObj = classesMap.get(teacher.classId);
-                if (classObj) classObj.teachers.push(teacher);
-            });
+            const lecturesMap = new Map((rawData.lectures || []).map(l => [l.id, l]));
 
-            (rawData.lectures || []).forEach(lecture => {
+            // Step 1: Link lectures to teachers and create subject groups
+            lecturesMap.forEach(lecture => {
                 const teacherObj = teachersMap.get(lecture.teacherId);
                 if (teacherObj) {
                     const subjectName = lecture.subject || 'General';
-                    if (!teacherObj.subjects.has(subjectName)) teacherObj.subjects.set(subjectName, { name: subjectName, lectures: [] });
+                    if (!teacherObj.subjects.has(subjectName)) {
+                        teacherObj.subjects.set(subjectName, { name: subjectName, lectures: [] });
+                    }
                     teacherObj.subjects.get(subjectName).lectures.push({ ...lecture, number: parseInt(lecture.number) || 0 });
                 }
             });
 
+            // Step 2: Sort lectures within each subject and subjects within each teacher
             teachersMap.forEach(teacher => {
                 teacher.subjects = Array.from(teacher.subjects.values()).sort((a, b) => a.name.localeCompare(b.name));
                 teacher.subjects.forEach(subject => subject.lectures.sort((a, b) => a.number - b.number));
+            });
+
+            // Step 3: Link teachers to multiple classes based on classId array
+            teachersMap.forEach(teacher => {
+                if (teacher.classId && Array.isArray(teacher.classId)) {
+                    teacher.classId.forEach(cId => {
+                        const classObj = classesMap.get(cId);
+                        if (classObj) {
+                            // Check if teacher is already added to prevent duplicates
+                            if (!classObj.teachers.some(t => t.id === teacher.id)) {
+                                classObj.teachers.push(teacher);
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Step 4: Sort teachers within each class
+            classesMap.forEach(classObj => {
+                classObj.teachers.sort((a, b) => a.name.localeCompare(b.name));
             });
 
             return Array.from(classesMap.values());
@@ -322,7 +346,7 @@
             DOMElements.labels.teacherNameForSubjects.textContent = teacher.name;
             const container = DOMElements.containers.subjects;
             container.innerHTML = teacher.subjects.map(s => `
-                 <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${s.name}">
+                <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${s.name}">
                     <div><h3 class="text-white text-xl font-semibold mb-2">${s.name}</h3><p class="text-slate-300 text-sm">${s.lectures.length} Lectures</p></div>
                     <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Lectures</button>
                 </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No subjects for this teacher.</p>';
@@ -392,7 +416,7 @@
                 home.classList.add('active-breadcrumb');
             }
         }
-        
+
         function updateModalContent(lang) {
             if (!state.currentLecture) return;
             const l = state.currentLecture;
@@ -400,7 +424,11 @@
             const contentUrl = isUrdu ? l.contentUrlUrdu || l.contentUrl : l.contentUrl;
             const downloadUrl = isUrdu ? l.downloadUrlUrdu || l.downloadUrl : l.downloadUrl;
             const audioUrl = isUrdu ? l.audioUrlUrdu || l.audioUrl : l.audioUrl;
-           
+            const videoUrl = isUrdu ? l.videoUrlUrdu || l.videoUrl : l.videoUrl;
+
+            DOMElements.modal.videoContainer.classList.toggle('hidden', !videoUrl);
+            if (videoUrl) { DOMElements.modal.videoPlayer.src = videoUrl; DOMElements.modal.videoPlayer.load(); DOMElements.modal.videoPlayer.pause(); }
+
             DOMElements.modal.audioContainer.classList.toggle('hidden', !audioUrl);
             if (audioUrl) { DOMElements.modal.audioPlayer.src = audioUrl; DOMElements.modal.audioPlayer.load(); DOMElements.modal.audioPlayer.pause(); }
 
@@ -414,7 +442,7 @@
 
         function showModal(lecture, event) {
             state.currentLecture = lecture;
-            DOMElements.modal.title.textContent = lecture.title; // FIX: Only show title
+            DOMElements.modal.title.textContent = `Lecture ${lecture.number}: ${lecture.title}`;
             updateModalContent('english');
             
             DOMElements.modal.main.classList.remove('hidden');
@@ -428,6 +456,7 @@
 
         function hideModal(immediate = false) {
             DOMElements.modal.audioPlayer.pause();
+            DOMElements.modal.videoPlayer.pause();
             
             const modalContent = DOMElements.modal.content;
             
@@ -453,19 +482,19 @@
                     const id = card.dataset.id;
                     switch(container.id) {
                         case 'classes-container':
-                            const cls = state.portalData.find(c => c.id == id);
+                            const cls = state.portalData.find(c => c.id === id);
                             if (cls) renderTeachers(cls);
                             break;
                         case 'teachers-container':
-                            const teacher = state.currentClass.teachers.find(t => t.id == id);
+                            const teacher = state.currentClass.teachers.find(t => t.id === id);
                             if (teacher) renderSubjects(teacher);
                             break;
                         case 'subjects-container':
-                             const subject = state.currentTeacher.subjects.find(s => s.name == id);
-                             if (subject) renderLectures(subject);
+                           const subject = state.currentTeacher.subjects.find(s => s.name === id);
+                           if (subject) renderLectures(subject);
                             break;
                         case 'lectures-container':
-                            const lecture = state.currentSubject.lectures.find(l => l.id == id);
+                            const lecture = state.currentSubject.lectures.find(l => l.id === id);
                             if (lecture) showModal(lecture, e);
                             break;
                     }
@@ -491,8 +520,6 @@
             DOMElements.breadcrumbs.home.addEventListener('click', () => { state.currentClass = state.currentTeacher = state.currentSubject = null; renderClasses(); });
             DOMElements.breadcrumbs.class.querySelector('span:last-child').addEventListener('click', () => { state.currentTeacher = state.currentSubject = null; renderTeachers(state.currentClass); });
             DOMElements.breadcrumbs.teacher.querySelector('span:last-child').addEventListener('click', () => { state.currentSubject = null; renderSubjects(state.currentTeacher); });
-            DOMElements.breadcrumbs.subject.querySelector('span:last-child').addEventListener('click', () => renderLectures(state.currentSubject));
-
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -505,4 +532,3 @@
     </script>
 </body>
 </html>
-
