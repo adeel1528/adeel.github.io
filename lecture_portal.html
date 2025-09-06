@@ -11,15 +11,26 @@
         html {
             scroll-behavior: smooth;
         }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1e293b; /* Dark blue background - Slate 900 */
+            transition: background-color 0.3s ease-in-out;
             /* Subtle grid pattern */
             background-image:
                 linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
             background-size: 20px 20px; /* Adjust grid size */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+        body.dark {
+            background-color: #1e293b; /* Dark blue background - Slate 900 */
+        }
+        body.light {
+            background-color: #f1f5f9; /* Light gray background - Slate 100 */
+        }
+        
         /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #334155; border-radius: 10px; }
@@ -46,7 +57,16 @@
 
         /* Custom glow for main app container */
         #app {
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            flex: 1; /* Make main content fill available space */
+        }
+        body.dark #app {
+            background-color: #475569; /* Slate 700 */
             box-shadow: 0 0 20px rgba(252, 211, 77, 0.4), 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        body.light #app {
+            background-color: #ffffff; /* White */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.05);
         }
         
         /* Fade-in animation for sections */
@@ -69,7 +89,9 @@
         /* New: Glowing animation for the search bar */
         #lecture-search-input {
             transition: all 0.3s ease-in-out;
-            border-color: #f59e0b; /* amber-500 */
+        }
+        body.dark #lecture-search-input {
+            border-color: #f59e0b;
             box-shadow: 0 0 8px rgba(252, 211, 77, 0.4);
         }
         #lecture-search-input:focus {
@@ -80,110 +102,231 @@
             50% { box-shadow: 0 0 20px rgba(252, 211, 77, 0.8); }
             100% { box-shadow: 0 0 8px rgba(252, 211, 77, 0.4); }
         }
+
+        /* Advanced UI: Different card colors for each level */
+        .card-class {
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+        .card-teacher {
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+        .card-subject {
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+        .card-lecture {
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        /* Dark Mode Colors */
+        body.dark .card-class { background-color: #1a425a; border-color: #2b709e; }
+        body.dark .card-teacher { background-color: #472b1d; border-color: #8c4e36; }
+        body.dark .card-subject { background-color: #3b3a1a; border-color: #6d6b2f; }
+        body.dark .card-lecture { background-color: #2b1d40; border-color: #5a3c7c; }
+
+        /* Light Mode Colors */
+        body.light .card-class { background-color: #e2f2ff; border-color: #90c2f0; }
+        body.light .card-teacher { background-color: #fff0e0; border-color: #ffb880; }
+        body.light .card-subject { background-color: #eafce5; border-color: #a3d995; }
+        body.light .card-lecture { background-color: #f3e6ff; border-color: #c9a7e0; }
+        body.light #app { background-color: #ffffff; }
+        body.light .text-white { color: #1e293b; }
+        body.light .text-slate-300 { color: #334155; }
+        body.light .text-slate-200 { color: #475569; }
+        body.light .bg-slate-600 { background-color: #f1f5f9; }
+        body.light .bg-slate-500 { background-color: #cbd5e1; }
+        body.light #lecture-search-input { background-color: #cbd5e1; color: #1e293b; }
+        body.light #lecture-search-input::placeholder { color: #64748b; }
+        body.light .bg-slate-700 { background-color: #e2e8f0; }
+        body.light .border-slate-500 { border-color: #e2e8f0; }
+        body.light .border-amber-300 { border-color: #f59e0b; }
+        body.light .text-slate-400 { color: #64748b; }
+        body.light .text-slate-500 { color: #94a3b8; }
+        body.light .text-blue-600 { color: #2563eb; }
+        body.light .text-green-600 { color: #16a34a; }
+        body.light .bg-slate-800 { background-color: #94a3b8; }
+        body.light .bg-amber-100 { background-color: #fffbeb; }
+        body.light .bg-slate-900 { background-color: #e2e8f0; }
+
+
+        .sun-icon { display: none; }
+        .moon-icon { display: block; }
+        body.light .sun-icon { display: block; }
+        body.light .moon-icon { display: none; }
+
+        /* Updated styles for disabled buttons */
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+
+        /* Modal for Teacher Bio */
+        #teacher-bio-modal {
+            transition: opacity 0.3s ease-out;
+        }
+
+        /* New: Book Icon Styling for Lectures */
+        .book-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+        .card-lecture:hover .book-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+        
+        /* New: Force min-height on cards for consistent size */
+        .class-card-min-h {
+            min-height: 180px; /* Increased height for better mobile layout */
+        }
+        .teacher-card-min-h {
+            min-height: 280px; /* Increased height for better mobile layout */
+        }
+        .subject-card-min-h {
+            min-height: 180px; /* Increased height for better mobile layout */
+        }
+        .lecture-card-min-h {
+            min-height: 120px; /* Increased height for better mobile layout */
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
-    <div id="app" class="bg-slate-700 rounded-2xl p-4 sm:p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out relative overflow-hidden">
-        <!-- College Logo -->
-        <div class="flex justify-center mb-6">
-            <img src="https://bgmchurch.org/wp-content/uploads/elementor/thumbs/bgm-bluelogo-qzshc087trea6hnhp0uqc6aifp2s383kxpbmzskp9k.png" alt="College Logo" class="w-28 h-28 rounded-full border-4 border-amber-400 shadow-lg object-cover">
-        </div>
-
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-white">Lecture Portal</h1>
-
-        <!-- Navigation/Breadcrumbs -->
-        <div class="mb-8 text-slate-300 text-lg flex items-center justify-center flex-wrap gap-2">
-            <span id="breadcrumb-home" class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500">Home</span>
-            <span id="breadcrumb-class" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
-            <span id="breadcrumb-teacher" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
-            <span id="breadcrumb-subject" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
-        </div>
-
-        <!-- Instructions for URL -->
-        <div id="url-instruction" class="bg-amber-100 border-l-4 border-amber-500 text-amber-900 p-4 mb-6 rounded-lg shadow-md">
-            <p class="font-bold text-lg">Important: Configure Google Apps Script URL!</p>
-            <p class="text-base mt-1">Please replace <code class="bg-amber-200 px-1 rounded-md text-amber-900 font-mono">GOOGLE_APPS_SCRIPT_URL</code> in the JavaScript section of this HTML file with the **actual deployed URL** of your Google Apps Script Web App. This step is crucial for the app to fetch dynamic data from your Google Sheet.</p>
-        </div>
-
-        <!-- Loading Indicator -->
-        <div id="loading-indicator" class="text-center py-10 text-slate-300">
-            <svg class="animate-spin h-10 w-10 text-amber-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p class="text-lg font-medium">Loading dynamic data from Google Sheet...</p>
-        </div>
-
-
-        <!-- Error Message -->
-        <div id="error-message" class="hidden text-center py-10 text-red-400 bg-red-900 bg-opacity-30 border-l-4 border-red-700 p-6 rounded-lg shadow-md">
-            <p class="font-bold text-xl mb-2">Error loading data!</p>
-            <p class="text-base">It seems there was a problem fetching information. Please ensure:</p>
-            <ul class="list-disc list-inside text-left mx-auto max-w-sm mt-3">
-                <li>The Google Apps Script is correctly deployed as a "Web App" with "Anyone" access.</li>
-                <li>The <code class="bg-red-800 px-1 rounded-sm font-mono text-red-200">GOOGLE_APPS_SCRIPT_URL</code> in this HTML file is updated.</li>
-                <li>Your Google Sheet has a `subject` column in the `Lectures` tab.</li>
-            </ul>
-            <p class="text-sm mt-4">For more details, check your browser's console (F12).</p>
-        </div>
-
-        <!-- Section for Classes -->
-        <div id="classes-section" class="hidden">
-            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Classes</h2>
-            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-        </div>
-
-        <!-- Section for Teachers -->
-        <div id="teachers-section" class="hidden">
-            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Teachers for <span id="current-class-name" class="text-amber-400 font-bold"></span></h2>
-            <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-        </div>
-        
-        <!-- Section for Subjects -->
-        <div id="subjects-section" class="hidden">
-            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Subjects by <span id="current-teacher-name-for-subjects" class="text-amber-400 font-bold"></span></h2>
-            <div id="subjects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-        </div>
-
-        <!-- Section for Lectures -->
-        <div id="lectures-section" class="hidden">
-            <h2 class="text-2xl font-semibold text-slate-200 mb-6">Lectures for <span id="current-subject-name" class="text-amber-400 font-bold"></span> by <span id="current-teacher-name" class="text-amber-400 font-bold"></span></h2>
-            <div class="mb-6 flex flex-col sm:flex-row gap-3">
-                <input type="text" id="lecture-search-input" placeholder="Lectures search karein..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border focus:outline-none">
-                <button id="clear-search-btn" class="bg-slate-500 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-600 transition duration-300 shadow-md">Clear Search</button>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-4 dark">
+    <div class="flex-1 flex items-center justify-center p-2 sm:p-4">
+        <div id="app" class="rounded-2xl p-4 sm:p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out relative overflow-hidden">
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full bg-slate-600 text-white hover:bg-slate-500 transition duration-300 shadow-lg">
+                <!-- Moon Icon for Dark Mode -->
+                <svg class="moon-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                <!-- Sun Icon for Light Mode -->
+                <svg class="sun-icon w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.788 5.788a.75.75 0 00-1.06-1.06l-1.65 1.65a.75.75 0 001.06 1.06l1.65-1.65zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V18a.75.75 0 01.75-.75zM4.939 17.561a.75.75 0 001.06 1.06l1.65-1.65a.75.75 0 00-1.06-1.06l-1.65 1.65zM2.25 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3a.75.75 0 01-.75-.75zM17.561 19.061a.75.75 0 001.06-1.06l-1.65-1.65a.75.75 0 00-1.06 1.06l1.65 1.65zM21 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM19.061 4.939a.75.75 0 00-1.06 1.06l1.65 1.65a.75.75 0 001.06-1.06l-1.65-1.65z"></path></svg>
+            </button>
+            <!-- College Logo -->
+            <div class="flex justify-center mb-6">
+                <img src="https://bgmchurch.org/wp-content/uploads/elementor/thumbs/bgm-bluelogo-qzshc087trea6hnhp0uqc6aifp2s383kxpbmzskp9k.png" alt="College Logo" class="w-28 h-28 rounded-full border-4 border-amber-400 shadow-lg object-cover">
             </div>
-            <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-        </div>
-
-        <!-- Lecture View Modal -->
-        <div id="lecture-view-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4 flex items-center justify-center">
-            <div id="modal-content" class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
-                <div class="flex justify-between items-center mb-5">
-                    <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
-                    <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
+    
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-white">Lecture Portal</h1>
+    
+            <!-- Navigation/Breadcrumbs -->
+            <div class="mb-8 text-slate-300 text-lg flex items-center justify-center flex-wrap gap-2">
+                <span id="breadcrumb-home" class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500">Home</span>
+                <span id="breadcrumb-class" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
+                <span id="breadcrumb-teacher" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
+                <span id="breadcrumb-subject" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
+            </div>
+    
+            <!-- Instructions for URL -->
+            <div id="url-instruction" class="bg-amber-100 border-l-4 border-amber-500 text-amber-900 p-4 mb-6 rounded-lg shadow-md">
+                <p class="font-bold text-lg">Important: Configure Google Apps Script URL!</p>
+                <p class="text-base mt-1">Please replace <code class="bg-amber-200 px-1 rounded-md text-amber-900 font-mono">GOOGLE_APPS_SCRIPT_URL</code> in the JavaScript section of this HTML file with the **actual deployed URL** of your Google Apps Script Web App. This step is crucial for the app to fetch dynamic data from your Google Sheet.</p>
+            </div>
+    
+            <!-- Loading Indicator -->
+            <div id="loading-indicator" class="text-center py-10 text-slate-300">
+                <svg class="animate-spin h-10 w-10 text-amber-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-lg font-medium">Loading dynamic data from Google Sheet...</p>
+            </div>
+    
+    
+            <!-- Error Message -->
+            <div id="error-message" class="hidden text-center py-10 text-red-400 bg-red-900 bg-opacity-30 border-l-4 border-red-700 p-6 rounded-lg shadow-md">
+                <p class="font-bold text-xl mb-2">Error loading data!</p>
+                <p class="text-base">It seems there was a problem fetching information. Please ensure:</p>
+                <ul class="list-disc list-inside text-left mx-auto max-w-sm mt-3">
+                    <li>The Google Apps Script is correctly deployed as a "Web App" with "Anyone" access.</li>
+                    <li>The <code class="bg-red-800 px-1 rounded-sm font-mono text-red-200">GOOGLE_APPS_SCRIPT_URL</code> in this HTML file is updated.</li>
+                    <li>Your Google Sheet has a `subject` column in the `Lectures` tab.</li>
+                </ul>
+                <p class="text-sm mt-4">For more details, check your browser's console (F12).</p>
+            </div>
+    
+            <!-- Section for Classes -->
+            <div id="classes-section" class="hidden">
+                <h2 class="text-2xl font-semibold text-slate-200 mb-6">Classes</h2>
+                <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+    
+            <!-- Section for Teachers -->
+            <div id="teachers-section" class="hidden">
+                <h2 class="text-2xl font-semibold text-slate-200 mb-6">Teachers for <span id="current-class-name" class="text-amber-400 font-bold"></span></h2>
+                <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+            
+            <!-- Section for Subjects -->
+            <div id="subjects-section" class="hidden">
+                <h2 class="text-2xl font-semibold text-slate-200 mb-6">Subjects by <span id="current-teacher-name-for-subjects" class="text-amber-400 font-bold"></span></h2>
+                <div id="subjects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+    
+            <!-- Section for Lectures -->
+            <div id="lectures-section" class="hidden">
+                <h2 class="text-2xl font-semibold text-slate-200 mb-6">Lectures for <span id="current-subject-name" class="text-amber-400 font-bold"></span> by <span id="current-teacher-name" class="text-amber-400 font-bold"></span></h2>
+                <div class="mb-6 flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="lecture-search-input" placeholder="Lectures search karein..." class="flex-1 p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 border focus:outline-none">
+                    <button id="clear-search-btn" class="bg-slate-500 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-600 transition duration-300 shadow-md">Clear Search</button>
                 </div>
-                <div class="mb-5 border-t border-slate-600 pt-4">
-                    <p class="text-slate-300 mb-2 font-semibold">Zabaan Muntakhab Karein (Select Language):</p>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <button id="lang-english-btn" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">English</button>
-                        <button id="lang-urdu-btn" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">اردو (Urdu)</button>
+                <p id="search-result-count" class="text-sm text-slate-400 text-right mt-2"></p>
+                <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+    
+            <!-- Lecture View Modal -->
+            <div id="lecture-view-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4 flex items-center justify-center">
+                <div id="modal-content" class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
+                        <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
+                    </div>
+                    <div class="mb-5 border-t border-slate-600 pt-4">
+                        <p class="text-slate-300 mb-2 font-semibold">Zabaan Muntakhab Karein (Select Language):</p>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button id="lang-english-btn" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">English</button>
+                            <button id="lang-urdu-btn" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">اردو (Urdu)</button>
+                        </div>
+                    </div>
+                    <div id="lecture-video-player-container" class="mb-5 hidden">
+                        <p class="text-slate-300 mb-2 font-semibold">Lecture Video:</p>
+                        <video id="lecture-video-player" controls preload="metadata"></video>
+                    </div>
+                    <div id="lecture-audio-player-container" class="mb-5 hidden">
+                        <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
+                        <audio id="lecture-audio-player" controls preload="metadata"></audio>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition">View Content</a>
+                        <a id="lecture-download-link" href="#" download class="flex-1 bg-amber-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-700 transition">Download</a>
                     </div>
                 </div>
-                <div id="lecture-video-player-container" class="mb-5 hidden">
-                    <p class="text-slate-300 mb-2 font-semibold">Lecture Video:</p>
-                    <video id="lecture-video-player" controls preload="metadata"></video>
-                </div>
-                <div id="lecture-audio-player-container" class="mb-5 hidden">
-                    <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
-                    <audio id="lecture-audio-player" controls preload="metadata"></audio>
-                </div>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition">View Content</a>
-                    <a id="lecture-download-link" href="#" download class="flex-1 bg-amber-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-700 transition">Download</a>
+            </div>
+    
+            <!-- Teacher Bio Modal -->
+            <div id="teacher-bio-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4 flex items-center justify-center">
+                <div id="bio-modal-content" class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 id="bio-modal-title" class="text-2xl font-bold text-white">Teacher Bio</h3>
+                        <button id="close-bio-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
+                    </div>
+                    <div id="bio-content">
+                        <img id="bio-teacher-picture" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-amber-400 object-cover">
+                        <h4 id="bio-teacher-name" class="text-xl font-bold text-center text-white mb-2"></h4>
+                        <p id="bio-teacher-details" class="text-slate-300 text-center"></p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Main Footer -->
+    <footer class="bg-slate-800 text-slate-400 text-center p-4">
+        <p>&copy; 2024 Lecture Portal. All rights reserved.</p>
+    </footer>
+
+    <!-- Policy Footer -->
+    <footer class="bg-slate-900 text-slate-500 text-center text-sm p-2 flex justify-center space-x-4">
+        <a href="#" class="hover:text-slate-300 transition">Privacy Policy</a>
+        <span>|</span>
+        <a href="#" class="hover:text-slate-300 transition">Terms of Service</a>
+    </footer>
 
     <script>
         // !! IMPORTANT: Replace this with the deployed Google Apps Script Web App URL !!
@@ -237,16 +380,33 @@
                 viewLink: document.getElementById('lecture-view-link'),
                 downloadLink: document.getElementById('lecture-download-link'),
             },
+            bioModal: {
+                main: document.getElementById('teacher-bio-modal'),
+                content: document.getElementById('bio-modal-content'),
+                title: document.getElementById('bio-modal-title'),
+                closeBtn: document.getElementById('close-bio-modal-btn'),
+                picture: document.getElementById('bio-teacher-picture'),
+                name: document.getElementById('bio-teacher-name'),
+                details: document.getElementById('bio-teacher-details'),
+            },
             search: {
                 input: document.getElementById('lecture-search-input'),
                 clearBtn: document.getElementById('clear-search-btn'),
+                resultCount: document.getElementById('search-result-count')
             },
             indicators: {
                 loading: document.getElementById('loading-indicator'),
                 error: document.getElementById('error-message'),
                 urlInstruction: document.getElementById('url-instruction'),
-            }
+            },
+            themeToggle: document.getElementById('theme-toggle')
         };
+
+        function applyTheme(theme) {
+            document.body.classList.remove('dark', 'light');
+            document.body.classList.add(theme);
+            localStorage.setItem('theme', theme);
+        }
 
         async function fetchData() {
             DOMElements.indicators.loading.classList.remove('hidden');
@@ -271,13 +431,11 @@
             }
         }
         
-        // This is the function with major changes
         function processData(rawData) {
             const classesMap = new Map((rawData.classes || []).map(c => [c.id, { ...c, teachers: [] }]));
             const teachersMap = new Map((rawData.teachers || []).map(t => [t.id, { ...t, picture: t.picture || 'https://placehold.co/100x100/475569/cbd5e1?text=N/A', subjects: new Map() }]));
             const lecturesMap = new Map((rawData.lectures || []).map(l => [l.id, l]));
 
-            // Step 1: Link lectures to teachers and create subject groups
             lecturesMap.forEach(lecture => {
                 const teacherObj = teachersMap.get(lecture.teacherId);
                 if (teacherObj) {
@@ -289,19 +447,16 @@
                 }
             });
 
-            // Step 2: Sort lectures within each subject and subjects within each teacher
             teachersMap.forEach(teacher => {
                 teacher.subjects = Array.from(teacher.subjects.values()).sort((a, b) => a.name.localeCompare(b.name));
                 teacher.subjects.forEach(subject => subject.lectures.sort((a, b) => a.number - b.number));
             });
 
-            // Step 3: Link teachers to multiple classes based on classId array
             teachersMap.forEach(teacher => {
                 if (teacher.classId && Array.isArray(teacher.classId)) {
                     teacher.classId.forEach(cId => {
                         const classObj = classesMap.get(cId);
                         if (classObj) {
-                            // Check if teacher is already added to prevent duplicates
                             if (!classObj.teachers.some(t => t.id === teacher.id)) {
                                 classObj.teachers.push(teacher);
                             }
@@ -310,7 +465,6 @@
                 }
             });
 
-            // Step 4: Sort teachers within each class
             classesMap.forEach(classObj => {
                 classObj.teachers.sort((a, b) => a.name.localeCompare(b.name));
             });
@@ -321,7 +475,7 @@
         function renderClasses() {
             const container = DOMElements.containers.classes;
             container.innerHTML = state.portalData.map(cls => `
-                <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${cls.id}">
+                <div class="card-hover card-class p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500 class-card-min-h" data-id="${cls.id}">
                     <div><h3 class="text-white text-xl font-semibold mb-2">${cls.name}</h3><p class="text-slate-300 text-sm">${cls.teachers.length} Teachers</p></div>
                     <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Teachers</button>
                 </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No classes available.</p>';
@@ -333,10 +487,13 @@
             DOMElements.labels.className.textContent = cls.name;
             const container = DOMElements.containers.teachers;
             container.innerHTML = cls.teachers.map(t => `
-                <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col items-center text-center border border-slate-500" data-id="${t.id}">
+                <div class="card-hover card-teacher p-6 rounded-xl shadow-md flex flex-col items-center text-center border border-slate-500 teacher-card-min-h" data-id="${t.id}">
                     <img src="${t.picture}" alt="${t.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400" onerror="this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A'">
                     <h3 class="text-white text-xl font-semibold mb-1">${t.name}</h3><p class="text-slate-300 text-sm">${t.subjects.length} Subjects</p>
-                    <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Subjects</button>
+                    <div class="mt-4 flex gap-2 w-full">
+                        <button class="flex-1 bg-amber-500 text-white px-3 py-2 rounded-lg font-semibold hover:bg-amber-600 transition view-subjects-btn">View Subjects</button>
+                        <button class="flex-1 bg-blue-500 text-white px-3 py-2 rounded-lg font-semibold hover:bg-blue-600 transition view-bio-btn">Bio</button>
+                    </div>
                 </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No teachers for this class.</p>';
             showSection('teachers');
         }
@@ -346,7 +503,7 @@
             DOMElements.labels.teacherNameForSubjects.textContent = teacher.name;
             const container = DOMElements.containers.subjects;
             container.innerHTML = teacher.subjects.map(s => `
-                <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${s.name}">
+                <div class="card-hover card-subject p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500 subject-card-min-h" data-id="${s.name}">
                     <div><h3 class="text-white text-xl font-semibold mb-2">${s.name}</h3><p class="text-slate-300 text-sm">${s.lectures.length} Lectures</p></div>
                     <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Lectures</button>
                 </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No subjects for this teacher.</p>';
@@ -362,15 +519,34 @@
             const lectures = searchQuery 
                 ? subject.lectures.filter(l => 
                     l.title.toLowerCase().includes(lowerCaseQuery) || 
-                    String(l.number).includes(lowerCaseQuery)
+                    String(l.number).toLowerCase().includes(lowerCaseQuery) ||
+                    l.contentUrl.toLowerCase().includes(lowerCaseQuery) ||
+                    l.downloadUrl.toLowerCase().includes(lowerCaseQuery) ||
+                    l.audioUrl.toLowerCase().includes(lowerCaseQuery)
                   ) 
                 : subject.lectures;
-
+            
+            DOMElements.search.resultCount.textContent = `${lectures.length} lectures found.`;
+            
             const container = DOMElements.containers.lectures;
             container.innerHTML = lectures.map(l => `
-                <div class="card-hover bg-slate-600 p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500" data-id="${l.id}">
-                    <div><h3 class="text-white text-xl font-semibold mb-2">Lecture ${l.number}: ${l.title}</h3></div>
-                    <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition view-lecture-btn">View Lecture</button>
+                <div class="card-hover card-lecture p-6 rounded-xl shadow-md flex items-center justify-between border border-slate-500 lecture-card-min-h" data-id="${l.id}">
+                    <div class="flex items-center space-x-4">
+                        <svg class="book-icon w-8 h-8 text-amber-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 4h2v5H9V4zm4 16h-2v-5h2v5zm4-16h-2v5h2V4z"></path>
+                            <path d="M18 20H6V4h2v5h4V4h2v5h4v11zM11 15v5H9v-5h2zm4-5v5h-2v-5h2z"></path>
+                            <path d="M18 20V4h-2v5h-4V4h-2v5H6v11h12zm-7-5H9v-5h2v5zm4 0h-2v-5h2v5z"></path>
+                            <path d="M18 20V4H6v16h12zM9 4h2v5H9V4zm4 5h-2v-5h2v5zm4-5h-2v5h2V4z"></path>
+                            <path d="M12 12c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm-5 4h-2v-2h2v2zm10 0h-2v-2h2v2zm-5 5v-2h-2v-2h2v4z"></path>
+                            <path d="M12 12c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path>
+                            <path d="M12 14.5c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5z"></path>
+                        </svg>
+                        <div>
+                            <h3 class="text-white text-lg font-semibold">${l.title}</h3>
+                            <p class="text-slate-300 text-sm">Lecture ${l.number}</p>
+                        </div>
+                    </div>
+                    <button class="mt-0 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition view-lecture-btn">View Lecture</button>
                 </div>`).join('') || `<p class="text-slate-300 text-center col-span-full py-8 text-lg">No lectures found.</p>`;
             showSection('lectures');
         }
@@ -426,15 +602,26 @@
             const audioUrl = isUrdu ? l.audioUrlUrdu || l.audioUrl : l.audioUrl;
             const videoUrl = isUrdu ? l.videoUrlUrdu || l.videoUrl : l.videoUrl;
 
+            DOMElements.modal.videoPlayer.src = videoUrl || '';
+            DOMElements.modal.videoPlayer.pause();
             DOMElements.modal.videoContainer.classList.toggle('hidden', !videoUrl);
-            if (videoUrl) { DOMElements.modal.videoPlayer.src = videoUrl; DOMElements.modal.videoPlayer.load(); DOMElements.modal.videoPlayer.pause(); }
 
+            DOMElements.modal.audioPlayer.src = audioUrl || '';
+            DOMElements.modal.audioPlayer.pause();
             DOMElements.modal.audioContainer.classList.toggle('hidden', !audioUrl);
-            if (audioUrl) { DOMElements.modal.audioPlayer.src = audioUrl; DOMElements.modal.audioPlayer.load(); DOMElements.modal.audioPlayer.pause(); }
 
-            DOMElements.modal.viewLink.href = contentUrl || '#';
-            DOMElements.modal.downloadLink.href = downloadUrl || '#';
-            DOMElements.modal.downloadLink.download = `${l.title.replace(/\s/g, '_')}_${lang}.pdf`;
+            // Update links and their styles
+            const viewLink = DOMElements.modal.viewLink;
+            const downloadLink = DOMElements.modal.downloadLink;
+
+            viewLink.href = contentUrl || '#';
+            viewLink.classList.toggle('btn-disabled', !contentUrl);
+            viewLink.style.pointerEvents = contentUrl ? 'auto' : 'none';
+
+            downloadLink.href = downloadUrl || '#';
+            downloadLink.download = downloadUrl ? `${l.title.replace(/\s/g, '_')}_${lang}.pdf` : null;
+            downloadLink.classList.toggle('btn-disabled', !downloadUrl);
+            downloadLink.style.pointerEvents = downloadUrl ? 'auto' : 'none';
             
             DOMElements.modal.langEnglishBtn.classList.toggle('ring-2', !isUrdu);
             DOMElements.modal.langUrduBtn.classList.toggle('ring-2', isUrdu);
@@ -469,6 +656,39 @@
                 }, 300);
             }
         }
+        
+        function showBioModal(teacher) {
+            DOMElements.bioModal.picture.src = teacher.picture;
+            DOMElements.bioModal.name.textContent = teacher.name;
+            
+            const bioText = teacher.bio || 'No bio available.';
+            const email = teacher.email ? `Email: ${teacher.email}` : '';
+            const phone = teacher.phone ? `Phone: ${teacher.phone}` : '';
+            
+            DOMElements.bioModal.details.innerHTML = `
+                <p class="mb-2">${bioText}</p>
+                <p class="font-semibold">${email}</p>
+                <p class="font-semibold">${phone}</p>
+            `;
+
+            DOMElements.bioModal.main.classList.remove('hidden');
+            setTimeout(() => {
+                DOMElements.bioModal.content.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function hideBioModal(immediate = false) {
+            const bioContent = DOMElements.bioModal.content;
+            
+            if (immediate) {
+                DOMElements.bioModal.main.classList.add('hidden');
+            } else {
+                bioContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    DOMElements.bioModal.main.classList.add('hidden');
+                }, 300);
+            }
+        }
 
         function setupEventListeners() {
             // Event Delegation for all containers
@@ -487,7 +707,11 @@
                             break;
                         case 'teachers-container':
                             const teacher = state.currentClass.teachers.find(t => t.id === id);
-                            if (teacher) renderSubjects(teacher);
+                            if (button.classList.contains('view-subjects-btn')) {
+                                if (teacher) renderSubjects(teacher);
+                            } else if (button.classList.contains('view-bio-btn')) {
+                                if (teacher) showBioModal(teacher);
+                            }
                             break;
                         case 'subjects-container':
                            const subject = state.currentTeacher.subjects.find(s => s.name === id);
@@ -509,6 +733,12 @@
             DOMElements.modal.langEnglishBtn.addEventListener('click', () => updateModalContent('english'));
             DOMElements.modal.langUrduBtn.addEventListener('click', () => updateModalContent('urdu'));
 
+            // Bio Modal
+            DOMElements.bioModal.closeBtn.addEventListener('click', () => hideBioModal());
+            DOMElements.bioModal.main.addEventListener('click', (e) => {
+                if (e.target === DOMElements.bioModal.main) hideBioModal();
+            });
+
             // Search
             DOMElements.search.input.addEventListener('keyup', e => renderLectures(state.currentSubject, e.target.value));
             DOMElements.search.clearBtn.addEventListener('click', () => {
@@ -520,9 +750,18 @@
             DOMElements.breadcrumbs.home.addEventListener('click', () => { state.currentClass = state.currentTeacher = state.currentSubject = null; renderClasses(); });
             DOMElements.breadcrumbs.class.querySelector('span:last-child').addEventListener('click', () => { state.currentTeacher = state.currentSubject = null; renderTeachers(state.currentClass); });
             DOMElements.breadcrumbs.teacher.querySelector('span:last-child').addEventListener('click', () => { state.currentSubject = null; renderSubjects(state.currentTeacher); });
+
+            // Theme Toggle
+            DOMElements.themeToggle.addEventListener('click', () => {
+                const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                applyTheme(newTheme);
+            });
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
             setupEventListeners();
             state.portalData = await fetchData();
             if (state.portalData.length > 0) {
