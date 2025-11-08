@@ -429,7 +429,6 @@
             
             // 1. Handle standard watch link: https://www.youtube.com/watch?v=VIDEO_ID
             if (url.includes('watch?v=')) {
-                // Ensure the base URL is https://www.youtube.com/embed/
                 const videoIdMatch = url.match(/[?&]v=([^&]+)/);
                 if (videoIdMatch && videoIdMatch[1]) {
                     return `https://www.youtube.com/embed/${videoIdMatch[1]}`;
@@ -443,8 +442,15 @@
                     return `https://www.youtube.com/embed/${videoIdMatch[1]}`;
                 }
             }
+
+            // 3. If it's already an embed link (youtube.com/embed/) or another URL (like Google Drive), return it as is
+            // Note: We strip any extra parameters after the video ID for cleaner embedding
+            if (url.includes('youtube.com/embed/')) {
+                const parts = url.split('?')[0];
+                return parts;
+            }
             
-            // 3. If it's already an embed link or another non-YouTube link (e.g., Google Drive), return it as is
+            // If it's a direct video link (like Google Drive .mp4), return it so it uses the standard <video> tag
             return url;
         }
 
@@ -463,7 +469,7 @@
                 if (result.status !== 'success' || !result.data) throw new Error(result.message || 'Invalid API response');
                 return processData(result.data);
             } catch (error) {
-                console.error('Fetch error:', error);
+                console.error('Fetch error: Check your Google Apps Script Deployment!', error);
                 DOMElements.indicators.error.classList.remove('hidden');
                 DOMElements.indicators.urlInstruction.classList.remove('hidden');
                 return [];
@@ -659,12 +665,13 @@
             audioPlayer.pause();
             audioContainer.classList.toggle('hidden', !audioUrl);
 
-            // 2. Handle Video/YouTube Player (USING NORMALIZED URL)
+            // 2. Handle Video/YouTube Player (FIXED LOGIC)
             if (normalizedVideoUrl) {
+                // Determine if it's a YouTube embed (we check this AFTER normalization)
                 const isYouTube = normalizedVideoUrl.includes('youtube.com/embed');
                 
                 if (isYouTube) {
-                    // Use an iframe for YouTube
+                    // Inject iframe for YouTube
                     videoContainer.innerHTML = `
                         <p class="text-slate-300 mb-2 font-semibold">Lecture Video (YouTube):</p>
                         <!-- Responsive iframe container -->
@@ -675,24 +682,29 @@
                                 frameborder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                 allowfullscreen
+                                loading="lazy"
                             ></iframe>
                         </div>
                     `;
-                    // Ensure the native player reference is set to null, since we're using iframe
-                    DOMElements.modal.videoPlayer = null; 
                 } else {
-                    // Use the standard <video> tag for Google Drive or other direct video links
+                    // Inject native <video> tag for direct video files (Google Drive, .mp4, etc.)
                     videoContainer.innerHTML = `
-                        <p class="text-slate-300 mb-2 font-semibold">Lecture Video:</p>
-                        <video id="lecture-video-player" controls preload="metadata" class="w-full"></video>
+                        <p class="text-slate-300 mb-2 font-semibold">Lecture Video (Direct Media):</p>
+                        <video id="lecture-video-player-native" controls preload="metadata" class="w-full h-auto"></video>
                     `;
-                    // Re-assign DOMElements.modal.videoPlayer to the newly created video element
-                    const newVideoPlayer = videoContainer.querySelector('video');
-                    newVideoPlayer.src = normalizedVideoUrl;
-                    DOMElements.modal.videoPlayer = newVideoPlayer; 
+                    const nativePlayer = document.getElementById('lecture-video-player-native');
+                    if (nativePlayer) {
+                        nativePlayer.src = normalizedVideoUrl;
+                        // For direct media, we reassign the videoPlayer reference for pausing logic
+                        DOMElements.modal.videoPlayer = nativePlayer; 
+                    }
                 }
+
                 // Show the video container
                 videoContainer.classList.remove('hidden');
+                // Ensure DOMElements.modal.videoPlayer is null if using iframe, or the native element if using video tag
+                DOMElements.modal.videoPlayer = isYouTube ? null : document.getElementById('lecture-video-player-native');
+
             } else {
                 // Hide video section if no URL is present
                 if(DOMElements.modal.videoPlayer) DOMElements.modal.videoPlayer.pause();
@@ -735,7 +747,7 @@
 
         function hideModal(immediate = false) {
             DOMElements.modal.audioPlayer.pause();
-            // Pause video player if it exists (either native or null if iframe)
+            // Pause video player if it exists (only for native <video> tag)
             if (DOMElements.modal.videoPlayer) DOMElements.modal.videoPlayer.pause();
             
             const modalContent = DOMElements.modal.content;
@@ -843,7 +855,7 @@
             // Bio Modal
             DOMElements.bioModal.closeBtn.addEventListener('click', () => hideBioModal());
             DOMElements.bioModal.main.addEventListener('click', (e) => {
-                if (e.target === DOMElements.bioModal.main) hideBioModal();
+                if (e.target === DOMElements.modal.main) hideBioModal();
             });
 
             // Search
