@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lecture Portal</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -46,7 +45,7 @@
         }
 
         /* Styling for the audio/video player */
-        audio, video {
+        audio {
             width: 100%;
             border-radius: 10px;
             background-color: #475569;
@@ -54,6 +53,26 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             outline: none;
         }
+        /* Style for the container housing the video/iframe */
+        #lecture-video-player-container {
+            width: 100%;
+            /* For responsive iframe */
+            position: relative;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #lecture-video-player-container iframe,
+        #lecture-video-player-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
 
         /* Custom glow for main app container */
         #app {
@@ -86,7 +105,7 @@
             font-weight: 700;
         }
 
-        /* New: Glowing animation for the search bar */
+        /* Glowing animation for the search bar */
         #lecture-search-input {
             transition: all 0.3s ease-in-out;
         }
@@ -104,18 +123,10 @@
         }
 
         /* Advanced UI: Different card colors for each level */
-        .card-class {
-            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
-        }
-        .card-teacher {
-            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
-        }
-        .card-subject {
-            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
-        }
-        .card-lecture {
-            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
-        }
+        .card-class { transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; }
+        .card-teacher { transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; }
+        .card-subject { transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; }
+        .card-lecture { transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; }
 
         /* Dark Mode Colors */
         body.dark .card-class { background-color: #1a425a; border-color: #2b709e; }
@@ -191,21 +202,16 @@
 <body class="min-h-screen flex items-center justify-center p-2 sm:p-4 dark">
     <div class="flex-1 flex items-center justify-center p-2 sm:p-4">
         <div id="app" class="rounded-2xl p-4 sm:p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out relative overflow-hidden">
-            <!-- Theme Toggle Button -->
             <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full bg-slate-600 text-white hover:bg-slate-500 transition duration-300 shadow-lg">
-                <!-- Moon Icon for Dark Mode -->
                 <svg class="moon-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                <!-- Sun Icon for Light Mode -->
                 <svg class="sun-icon w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.788 5.788a.75.75 0 00-1.06-1.06l-1.65 1.65a.75.75 0 001.06 1.06l1.65-1.65zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V18a.75.75 0 01.75-.75zM4.939 17.561a.75.75 0 001.06 1.06l1.65-1.65a.75.75 0 00-1.06-1.06l-1.65 1.65zM2.25 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3a.75.75 0 01-.75-.75zM17.561 19.061a.75.75 0 001.06-1.06l-1.65-1.65a.75.75 0 00-1.06 1.06l1.65 1.65zM21 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM19.061 4.939a.75.75 0 00-1.06 1.06l1.65 1.65a.75.75 0 001.06-1.06l-1.65-1.65z"></path></svg>
             </button>
-            <!-- College Logo -->
             <div class="flex justify-center mb-6">
                 <img src="https://bgmchurch.org/wp-content/uploads/elementor/thumbs/bgm-bluelogo-qzshc087trea6hnhp0uqc6aifp2s383kxpbmzskp9k.png" alt="College Logo" class="w-28 h-28 rounded-full border-4 border-amber-400 shadow-lg object-cover">
             </div>
     
             <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-white">Lecture Portal</h1>
     
-            <!-- Navigation/Breadcrumbs -->
             <div class="mb-8 text-slate-300 text-lg flex items-center justify-center flex-wrap gap-2">
                 <span id="breadcrumb-home" class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500">Home</span>
                 <span id="breadcrumb-class" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
@@ -213,13 +219,11 @@
                 <span id="breadcrumb-subject" class="hidden items-center"> <span class="mx-2 text-slate-500">/</span> <span class="cursor-pointer font-medium hover:text-amber-400 transition duration-300 px-2 py-1 rounded-md bg-slate-600 hover:bg-slate-500"></span></span>
             </div>
     
-            <!-- Instructions for URL -->
             <div id="url-instruction" class="bg-amber-100 border-l-4 border-amber-500 text-amber-900 p-4 mb-6 rounded-lg shadow-md">
                 <p class="font-bold text-lg">Important: Configure Google Apps Script URL!</p>
                 <p class="text-base mt-1">Please replace <code class="bg-amber-200 px-1 rounded-md text-amber-900 font-mono">GOOGLE_APPS_SCRIPT_URL</code> in the JavaScript section of this HTML file with the **actual deployed URL** of your Google Apps Script Web App. This step is crucial for the app to fetch dynamic data from your Google Sheet.</p>
             </div>
     
-            <!-- Loading Indicator -->
             <div id="loading-indicator" class="text-center py-10 text-slate-300">
                 <svg class="animate-spin h-10 w-10 text-amber-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -229,7 +233,6 @@
             </div>
     
     
-            <!-- Error Message -->
             <div id="error-message" class="hidden text-center py-10 text-red-400 bg-red-900 bg-opacity-30 border-l-4 border-red-700 p-6 rounded-lg shadow-md">
                 <p class="font-bold text-xl mb-2">Error loading data!</p>
                 <p class="text-base">It seems there was a problem fetching information. Please ensure:</p>
@@ -241,25 +244,21 @@
                 <p class="text-sm mt-4">For more details, check your browser's console (F12).</p>
             </div>
     
-            <!-- Section for Classes -->
             <div id="classes-section" class="hidden">
                 <h2 class="text-2xl font-semibold text-slate-200 mb-6">Classes</h2>
                 <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
     
-            <!-- Section for Teachers -->
             <div id="teachers-section" class="hidden">
                 <h2 class="text-2xl font-semibold text-slate-200 mb-6">Teachers for <span id="current-class-name" class="text-amber-400 font-bold"></span></h2>
                 <div id="teachers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
             
-            <!-- Section for Subjects -->
             <div id="subjects-section" class="hidden">
                 <h2 class="text-2xl font-semibold text-slate-200 mb-6">Subjects by <span id="current-teacher-name-for-subjects" class="text-amber-400 font-bold"></span></h2>
                 <div id="subjects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
     
-            <!-- Section for Lectures -->
             <div id="lectures-section" class="hidden">
                 <h2 class="text-2xl font-semibold text-slate-200 mb-6">Lectures for <span id="current-subject-name" class="text-amber-400 font-bold"></span> by <span id="current-teacher-name" class="text-amber-400 font-bold"></span></h2>
                 <div class="mb-6 flex flex-col sm:flex-row gap-3">
@@ -270,7 +269,6 @@
                 <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
     
-            <!-- Lecture View Modal -->
             <div id="lecture-view-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4 flex items-center justify-center">
                 <div id="modal-content" class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
                     <div class="flex justify-between items-center mb-5">
@@ -299,7 +297,6 @@
                 </div>
             </div>
     
-            <!-- Teacher Bio Modal -->
             <div id="teacher-bio-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4 flex items-center justify-center">
                 <div id="bio-modal-content" class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
                     <div class="flex justify-between items-center mb-5">
@@ -316,12 +313,10 @@
         </div>
     </div>
 
-    <!-- Main Footer -->
     <footer class="bg-slate-800 text-slate-400 text-center p-4">
         <p>&copy; 2024 Lecture Portal. All rights reserved.</p>
     </footer>
 
-    <!-- Policy Footer -->
     <footer class="bg-slate-900 text-slate-500 text-center text-sm p-2 flex justify-center space-x-4">
         <a href="#" class="hover:text-slate-300 transition">Privacy Policy</a>
         <span>|</span>
@@ -330,7 +325,7 @@
 
     <script>
         // !! IMPORTANT: Replace this with the deployed Google Apps Script Web App URL !!
-        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRDqBREUsmhFkGZHVQkaRqwsrT8VxiRqCYapG1Ss6CPcbKyD3nKbc1OQP9x3qlPmsF/exec'; // **PLEASE REPLACE THIS**
+        const GOOGLE_APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; // **PLEASE REPLACE THIS**
 
         const state = {
             portalData: [],
@@ -374,6 +369,7 @@
                 langEnglishBtn: document.getElementById('lang-english-btn'),
                 langUrduBtn: document.getElementById('lang-urdu-btn'),
                 videoContainer: document.getElementById('lecture-video-player-container'),
+                // videoPlayer will be dynamically reassigned in updateModalContent
                 videoPlayer: document.getElementById('lecture-video-player'),
                 audioContainer: document.getElementById('lecture-audio-player-container'),
                 audioPlayer: document.getElementById('lecture-audio-player'),
@@ -413,8 +409,8 @@
             DOMElements.indicators.error.classList.add('hidden');
             DOMElements.indicators.urlInstruction.classList.add('hidden');
             try {
-                if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.includes('PLEASE+REPLACE+THIS')) {
-                    throw new Error("Google Apps Script URL is not set.");
+                if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.includes('GOOGLE_APPS_SCRIPT_URL_HERE')) {
+                    throw new Error("Google Apps Script URL is not set or is the placeholder.");
                 }
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -522,7 +518,8 @@
                     String(l.number).toLowerCase().includes(lowerCaseQuery) ||
                     (l.contentUrl && l.contentUrl.toLowerCase().includes(lowerCaseQuery)) ||
                     (l.downloadUrl && l.downloadUrl.toLowerCase().includes(lowerCaseQuery)) ||
-                    (l.audioUrl && l.audioUrl.toLowerCase().includes(lowerCaseQuery))
+                    (l.audioUrl && l.audioUrl.toLowerCase().includes(lowerCaseQuery)) ||
+                    (l.videoUrl && l.videoUrl.toLowerCase().includes(lowerCaseQuery))
                   ) 
                 : subject.lectures;
             
@@ -597,20 +594,64 @@
             if (!state.currentLecture) return;
             const l = state.currentLecture;
             const isUrdu = lang === 'urdu';
+            
+            // Determine URLs based on language
             const contentUrl = isUrdu ? l.contentUrlUrdu || l.contentUrl : l.contentUrl;
             const downloadUrl = isUrdu ? l.downloadUrlUrdu || l.downloadUrl : l.downloadUrl;
             const audioUrl = isUrdu ? l.audioUrlUrdu || l.audioUrl : l.audioUrl;
             const videoUrl = isUrdu ? l.videoUrlUrdu || l.videoUrl : l.videoUrl;
 
-            DOMElements.modal.videoPlayer.src = videoUrl || '';
-            DOMElements.modal.videoPlayer.pause();
-            DOMElements.modal.videoContainer.classList.toggle('hidden', !videoUrl);
+            const videoContainer = DOMElements.modal.videoContainer;
+            const audioPlayer = DOMElements.modal.audioPlayer;
+            const audioContainer = DOMElements.modal.audioContainer;
 
-            DOMElements.modal.audioPlayer.src = audioUrl || '';
-            DOMElements.modal.audioPlayer.pause();
-            DOMElements.modal.audioContainer.classList.toggle('hidden', !audioUrl);
+            // 1. Handle Audio Player
+            audioPlayer.src = audioUrl || '';
+            audioPlayer.pause();
+            audioContainer.classList.toggle('hidden', !audioUrl);
 
-            // Update links and their styles
+            // 2. Handle Video/YouTube Player (NEW LOGIC)
+            if (videoUrl) {
+                const isYouTube = videoUrl.includes('youtube.com/embed') || videoUrl.includes('youtu.be');
+                
+                if (isYouTube) {
+                    // Use an iframe for YouTube
+                    videoContainer.innerHTML = `
+                        <p class="text-slate-300 mb-2 font-semibold">Lecture Video (YouTube):</p>
+                        <div class="relative w-full" style="padding-top: 56.25%;">
+                            <iframe 
+                                class="absolute top-0 left-0 w-full h-full rounded-lg shadow-xl"
+                                src="${videoUrl}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen
+                            ></iframe>
+                        </div>
+                    `;
+                    // Ensure the native player reference is set to null, since we're using iframe
+                    DOMElements.modal.videoPlayer = null; 
+                } else {
+                    // Use the standard <video> tag for Google Drive or other direct video links
+                    videoContainer.innerHTML = `
+                        <p class="text-slate-300 mb-2 font-semibold">Lecture Video:</p>
+                        <video id="lecture-video-player" controls preload="metadata"></video>
+                    `;
+                    // Re-assign DOMElements.modal.videoPlayer to the newly created video element
+                    const newVideoPlayer = videoContainer.querySelector('video');
+                    newVideoPlayer.src = videoUrl;
+                    DOMElements.modal.videoPlayer = newVideoPlayer; 
+                }
+                videoContainer.classList.remove('hidden');
+            } else {
+                // Hide video section if no URL is present
+                if(DOMElements.modal.videoPlayer) DOMElements.modal.videoPlayer.pause();
+                videoContainer.classList.add('hidden');
+                videoContainer.innerHTML = ''; // Clear content when hidden
+                DOMElements.modal.videoPlayer = null;
+            }
+
+
+            // 3. Update Links and Styles
             const viewLink = DOMElements.modal.viewLink;
             const downloadLink = DOMElements.modal.downloadLink;
 
@@ -643,7 +684,8 @@
 
         function hideModal(immediate = false) {
             DOMElements.modal.audioPlayer.pause();
-            DOMElements.modal.videoPlayer.pause();
+            // Pause video player if it exists (either native or null if iframe)
+            if (DOMElements.modal.videoPlayer) DOMElements.modal.videoPlayer.pause();
             
             const modalContent = DOMElements.modal.content;
             
