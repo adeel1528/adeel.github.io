@@ -513,7 +513,7 @@
             DOMElements.indicators.error.classList.add('hidden');
             DOMElements.indicators.urlInstruction.classList.add('hidden');
             try {
-                if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.includes('GOOGLE_APPS_SCRIPT_URL_HERE')) {
+                if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.includes('https://script.google.com/macros/s/AKfycbxRDqBREUsmhFkGZHVQkaRqwsrT8VxiRqCYapG1Ss6CPcbKyD3nKbc1OQP9x3qlPmsF/exec')) {
                     throw new Error("Google Apps Script URL is not set or is the placeholder. Please check the JavaScript file.");
                 }
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL);
