@@ -19,25 +19,25 @@
             background-image:
                 linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-            background-size: 20px 20px; /* Adjust grid size */
+            background-size: 20px 20px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
         body.dark {
-            background-color: #1e293b; /* Dark blue background - Slate 900 */
+            background-color: #1e293b; /* Slate 900 */
         }
         body.light {
-            background-color: #f1f5f9; /* Light gray background - Slate 100 */
+            background-color: #f1f5f9; /* Slate 100 */
         }
         
-        /* Custom scrollbar for better aesthetics */
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #334155; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Enhanced animation for card hover */
+        /* Card Hover Effects */
         .card-hover { transition: all 0.3s ease-in-out; }
         .card-hover:hover {
             transform: translateY(-8px) scale(1.02);
@@ -45,25 +45,38 @@
             filter: brightness(1.1);
         }
 
-        /* Styling for the audio/video player */
-        audio {
-            width: 100%;
-            border-radius: 10px;
-            background-color: #475569;
-            padding: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            outline: none;
+        /* --- UPDATED MODAL & VIDEO STYLES FOR MOBILE --- */
+        
+        /* Fix for Modal Scrolling on Mobile */
+        #lecture-view-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            overflow-y: auto; /* Allows scrolling if modal is too tall */
+            background-color: rgba(30, 41, 59, 0.9); /* Darker backdrop */
+            backdrop-filter: blur(4px);
         }
-        /* Style for the container housing the video/iframe */
+
+        /* Wrapper to center modal but allow scrolling */
+        .modal-scroll-wrapper {
+            display: flex;
+            min-height: 100%;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* Video Container - 16:9 Aspect Ratio */
         #lecture-video-player-container {
-            width: 100%;
-            /* For responsive iframe / video */
             position: relative;
-            padding-top: 56.25%; /* 16:9 aspect ratio */
-            border-radius: 10px;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+            border-radius: 0.5rem;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
         #lecture-video-player-container iframe,
         #lecture-video-player-container video {
             position: absolute;
@@ -74,72 +87,71 @@
             border: none;
         }
 
+        audio {
+            width: 100%;
+            border-radius: 10px;
+            background-color: #475569;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
 
-        /* Custom glow for main app container */
+        /* Main App Container Glow */
         #app {
             transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-            flex: 1; /* Make main content fill available space */
+            flex: 1;
         }
         body.dark #app {
-            background-color: #475569; /* Slate 700 */
+            background-color: #475569;
             box-shadow: 0 0 20px rgba(252, 211, 77, 0.4), 0 10px 20px rgba(0, 0, 0, 0.2);
         }
         body.light #app {
-            background-color: #ffffff; /* White */
+            background-color: #ffffff;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.05);
         }
         
-        /* Fade-in animation for sections */
-        .section-fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
+        /* Animations */
+        .section-fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Style for the active breadcrumb */
         .active-breadcrumb {
-            background-color: #f59e0b !important; /* amber-500 */
+            background-color: #f59e0b !important;
             color: #ffffff !important;
             font-weight: 700;
         }
 
-        /* Glowing animation for the search bar */
-        #lecture-search-input {
-            transition: all 0.3s ease-in-out;
-        }
+        /* Search Bar Glow */
+        #lecture-search-input { transition: all 0.3s ease-in-out; }
         body.dark #lecture-search-input {
             border-color: #f59e0b;
             box-shadow: 0 0 8px rgba(252, 211, 77, 0.4);
         }
-        #lecture-search-input:focus {
-            animation: glowing-border 1.8s infinite;
-        }
+        #lecture-search-input:focus { animation: glowing-border 1.8s infinite; }
         @keyframes glowing-border {
             0% { box-shadow: 0 0 8px rgba(252, 211, 77, 0.4); }
             50% { box-shadow: 0 0 20px rgba(252, 211, 77, 0.8); }
             100% { box-shadow: 0 0 8px rgba(252, 211, 77, 0.4); }
         }
 
-        /* Advanced UI: Different card colors for each level */
-        .card-class { transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; }
-        .card-teacher { transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; }
-        .card-subject { transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; }
-        .card-lecture { transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; }
+        /* Card Colors */
+        .card-class, .card-teacher, .card-subject, .card-lecture { transition: background-color 0.3s, border-color 0.3s; }
 
-        /* Dark Mode Colors */
+        /* Dark Mode */
         body.dark .card-class { background-color: #1a425a; border-color: #2b709e; }
         body.dark .card-teacher { background-color: #472b1d; border-color: #8c4e36; }
         body.dark .card-subject { background-color: #3b3a1a; border-color: #6d6b2f; }
         body.dark .card-lecture { background-color: #2b1d40; border-color: #5a3c7c; }
 
-        /* Light Mode Colors */
+        /* Light Mode */
         body.light .card-class { background-color: #e2f2ff; border-color: #90c2f0; }
         body.light .card-teacher { background-color: #fff0e0; border-color: #ffb880; }
         body.light .card-subject { background-color: #eafce5; border-color: #a3d995; }
         body.light .card-lecture { background-color: #f3e6ff; border-color: #c9a7e0; }
+        
+        /* Light Mode Text Overrides */
         body.light #app { background-color: #ffffff; }
         body.light .text-white { color: #1e293b; }
         body.light .text-slate-300 { color: #334155; }
@@ -159,57 +171,34 @@
         body.light .bg-amber-100 { background-color: #fffbeb; }
         body.light .bg-slate-900 { background-color: #e2e8f0; }
 
-
         .sun-icon { display: none; }
         .moon-icon { display: block; }
         body.light .sun-icon { display: block; }
         body.light .moon-icon { display: none; }
 
-        /* Updated styles for disabled buttons */
-        .btn-disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            filter: grayscale(100%);
-        }
-
-        /* Modal for Teacher Bio */
-        #teacher-bio-modal {
-            transition: opacity 0.3s ease-out;
-        }
-
-        /* New: Book Icon Styling for Lectures */
-        .book-icon {
-            transition: transform 0.3s ease-in-out;
-        }
-        .card-lecture:hover .book-icon {
-            transform: scale(1.1) rotate(-5deg);
-        }
+        .btn-disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); }
         
-        /* New: Force min-height on cards for consistent size */
-        .class-card-min-h {
-            min-height: 180px; /* Increased height for better mobile layout */
-        }
-        .teacher-card-min-h {
-            min-height: 280px; /* Increased height for better mobile layout */
-        }
-        .subject-card-min-h {
-            min-height: 180px; /* Increased height for better mobile layout */
-        }
-        .lecture-card-min-h {
-            min-height: 120px; /* Increased height for better mobile layout */
-        }
+        /* Book Icon Animation */
+        .book-icon { transition: transform 0.3s ease-in-out; }
+        .card-lecture:hover .book-icon { transform: scale(1.1) rotate(-5deg); }
+        
+        /* Min Heights for Cards */
+        .class-card-min-h { min-height: 180px; }
+        .teacher-card-min-h { min-height: 280px; }
+        .subject-card-min-h { min-height: 180px; }
+        .lecture-card-min-h { min-height: 120px; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-2 sm:p-4 dark">
     <div class="flex-1 flex items-center justify-center p-2 sm:p-4">
         <div id="app" class="rounded-2xl p-4 sm:p-6 md:p-10 w-full max-w-5xl border border-amber-300 transform transition-all duration-300 ease-in-out relative overflow-hidden">
+            
             <!-- Theme Toggle Button -->
-            <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full bg-slate-600 text-white hover:bg-slate-500 transition duration-300 shadow-lg">
-                <!-- Moon Icon for Dark Mode -->
-                <svg class="moon-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                <!-- Sun Icon for Light Mode -->
-                <svg class="sun-icon w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.788 5.788a.75.75 0 00-1.06-1.06l-1.65 1.65a.75.75 0 001.06 1.06l1.65-1.65zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V18a.75.75 0 01.75-.75zM4.939 17.561a.75.75 0 001.06 1.06l1.65-1.65a.75.75 0 00-1.06-1.06l-1.65 1.65zM2.25 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3a.75.75 0 01-.75-.75zM17.561 19.061a.75.75 0 001.06-1.06l-1.65-1.65a.75.75 0 00-1.06 1.06l1.65 1.65zM21 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM19.061 4.939a.75.75 0 00-1.06 1.06l1.65 1.65a.75.75 0 001.06-1.06l-1.65-1.65z"></path></svg>
+            <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full bg-slate-600 text-white hover:bg-slate-500 transition duration-300 shadow-lg z-10">
+                <svg class="moon-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                <svg class="sun-icon w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.788 5.788a.75.75 0 00-1.06-1.06l-1.65 1.65a.75.75 0 001.06 1.06l1.65-1.65zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V18a.75.75 0 01.75-.75zM4.939 17.561a.75.75 0 001.06 1.06l1.65-1.65a.75.75 0 00-1.06-1.06l-1.65 1.65zM2.25 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3a.75.75 0 01-.75-.75zM17.561 19.061a.75.75 0 001.06-1.06l-1.65-1.65a.75.75 0 00-1.06 1.06l1.65 1.65zM21 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM19.061 4.939a.75.75 0 00-1.06 1.06l1.65 1.65a.75.75 0 001.06-1.06l-1.65-1.65z"></path></svg>
             </button>
+
             <!-- College Logo -->
             <div class="flex justify-center mb-6">
                 <img src="https://bgmchurch.org/wp-content/uploads/elementor/thumbs/bgm-bluelogo-qzshc087trea6hnhp0uqc6aifp2s383kxpbmzskp9k.png" alt="College Logo" class="w-28 h-28 rounded-full border-4 border-amber-400 shadow-lg object-cover">
@@ -228,7 +217,7 @@
             <!-- Instructions for URL -->
             <div id="url-instruction" class="bg-amber-100 border-l-4 border-amber-500 text-amber-900 p-4 mb-6 rounded-lg shadow-md">
                 <p class="font-bold text-lg">Important: Configure Google Apps Script URL!</p>
-                <p class="text-base mt-1">Please replace <code class="bg-amber-200 px-1 rounded-md text-amber-900 font-mono">GOOGLE_APPS_SCRIPT_URL</code> in the JavaScript section of this HTML file with the **actual deployed URL** of your Google Apps Script Web App. This step is crucial for the app to fetch dynamic data from your Google Sheet.</p>
+                <p class="text-base mt-1">Please replace <code class="bg-amber-200 px-1 rounded-md text-amber-900 font-mono">GOOGLE_APPS_SCRIPT_URL</code> in the JavaScript section of this HTML file with the **actual deployed URL** of your Google Apps Script Web App.</p>
             </div>
     
             <!-- Loading Indicator -->
@@ -240,7 +229,6 @@
                 <p class="text-lg font-medium">Loading dynamic data from Google Sheet...</p>
             </div>
     
-    
             <!-- Error Message -->
             <div id="error-message" class="hidden text-center py-10 text-red-400 bg-red-900 bg-opacity-30 border-l-4 border-red-700 p-6 rounded-lg shadow-md">
                 <p class="font-bold text-xl mb-2">Error loading data!</p>
@@ -248,9 +236,7 @@
                 <ul class="list-disc list-inside text-left mx-auto max-w-sm mt-3">
                     <li>The Google Apps Script is correctly deployed as a "Web App" with "Anyone" access.</li>
                     <li>The <code class="bg-red-800 px-1 rounded-sm font-mono text-red-200">GOOGLE_APPS_SCRIPT_URL</code> in this HTML file is updated.</li>
-                    <li>Your Google Sheet has a `subject` column in the `Lectures` tab.</li>
                 </ul>
-                <p class="text-sm mt-4">For more details, check your browser's console (F12).</p>
             </div>
     
             <!-- Section for Classes -->
@@ -282,33 +268,51 @@
                 <div id="lectures-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
     
-            <!-- Lecture View Modal -->
-            <div id="lecture-view-modal" class="absolute inset-0 bg-slate-800 bg-opacity-75 hidden z-50 transition-opacity duration-300 ease-out p-4 flex items-center justify-center">
-                <div id="modal-content" class="bg-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300">
-                    <div class="flex justify-between items-center mb-5">
-                        <h3 id="lecture-modal-title" class="text-2xl font-bold text-white"></h3>
-                        <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-4xl font-light leading-none transition-transform duration-200 hover:rotate-90">&times;</button>
-                    </div>
-                    <div class="mb-5 border-t border-slate-600 pt-4">
-                        <p class="text-slate-300 mb-2 font-semibold">Zabaan Muntakhab Karein (Select Language):</p>
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <button id="lang-english-btn" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">English</button>
-                            <button id="lang-urdu-btn" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-md transform hover:scale-105 active:scale-95">اردو (Urdu)</button>
+            <!-- Lecture View Modal (Mobile Friendly Updated) -->
+            <div id="lecture-view-modal" class="hidden transition-opacity duration-300 ease-out">
+                <!-- Scroll Wrapper: This ensures the modal scrolls on small screens -->
+                <div class="modal-scroll-wrapper">
+                    
+                    <!-- Modal Content Card -->
+                    <div id="modal-content" class="bg-slate-700 rounded-2xl shadow-2xl p-4 sm:p-8 w-[95%] sm:max-w-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out border border-amber-300 relative">
+                        
+                        <!-- Header -->
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 id="lecture-modal-title" class="text-xl sm:text-2xl font-bold text-white pr-4 leading-tight"></h3>
+                            <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-3xl font-light leading-none p-1">&times;</button>
                         </div>
-                    </div>
-                    <!-- This container now dynamically holds <video> or <iframe> -->
-                    <div id="lecture-video-player-container" class="mb-5 hidden">
-                        <!-- Initial Placeholder - Content will be injected by JS -->
-                        <p class="text-slate-300 mb-2 font-semibold">Lecture Video:</p>
-                        <video id="lecture-video-player" controls preload="metadata"></video>
-                    </div>
-                    <div id="lecture-audio-player-container" class="mb-5 hidden">
-                        <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
-                        <audio id="lecture-audio-player" controls preload="metadata"></audio>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition">View Content</a>
-                        <a id="lecture-download-link" href="#" download class="flex-1 bg-amber-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-amber-700 transition">Download</a>
+
+                        <!-- Language Selection -->
+                        <div class="mb-4 border-t border-slate-600 pt-4">
+                            <p class="text-slate-300 mb-2 font-semibold text-sm sm:text-base">Zabaan Muntakhab Karein (Select Language):</p>
+                            <div class="flex gap-2 sm:gap-3">
+                                <button id="lang-english-btn" class="flex-1 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base hover:bg-blue-700 transition shadow-md">English</button>
+                                <button id="lang-urdu-btn" class="flex-1 bg-green-600 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base hover:bg-green-700 transition shadow-md">اردو (Urdu)</button>
+                            </div>
+                        </div>
+
+                        <!-- Video Player Container -->
+                        <div id="lecture-video-player-container" class="mb-4 hidden shadow-lg border border-slate-600">
+                            <!-- Video/Iframe injected here by JS -->
+                        </div>
+
+                        <!-- Audio Player Container -->
+                        <div id="lecture-audio-player-container" class="mb-5 hidden">
+                            <p class="text-slate-300 mb-2 font-semibold">Lecture Audio:</p>
+                            <audio id="lecture-audio-player" controls preload="metadata" class="w-full"></audio>
+                        </div>
+
+                        <!-- Action Buttons (View/Download) -->
+                        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2">
+                            <a id="lecture-view-link" href="#" target="_blank" class="flex-1 bg-amber-500 text-white py-3 sm:py-3 rounded-lg text-center font-semibold hover:bg-amber-600 transition shadow-md flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                View Content
+                            </a>
+                            <a id="lecture-download-link" href="#" download class="flex-1 bg-amber-600 text-white py-3 sm:py-3 rounded-lg text-center font-semibold hover:bg-amber-700 transition shadow-md flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                Download
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -388,8 +392,7 @@
                 langEnglishBtn: document.getElementById('lang-english-btn'),
                 langUrduBtn: document.getElementById('lang-urdu-btn'),
                 videoContainer: document.getElementById('lecture-video-player-container'),
-                // videoPlayer will be dynamically reassigned in updateModalContent
-                videoPlayer: document.getElementById('lecture-video-player'),
+                videoPlayer: null, // Will be assigned dynamically
                 audioContainer: document.getElementById('lecture-audio-player-container'),
                 audioPlayer: document.getElementById('lecture-audio-player'),
                 viewLink: document.getElementById('lecture-view-link'),
@@ -427,33 +430,29 @@
         function getEmbedUrl(url) {
             if (!url) return null;
             
-            // 1. Handle standard watch link: https://www.youtube.com/watch?v=VIDEO_ID
-            if (url.includes('watch?v=')) {
-                const videoIdMatch = url.match(/[?&]v=([^&]+)/);
-                if (videoIdMatch && videoIdMatch[1]) {
-                    return `https://www.youtube.com/embed/${videoIdMatch[1]}`;
-                }
-            }
-            
-            // 2. Handle short share link: https://youtu.be/VIDEO_ID
-            if (url.includes('youtu.be/')) {
-                const videoIdMatch = url.match(/youtu\.be\/([^?]+)/);
-                if (videoIdMatch && videoIdMatch[1]) {
-                    return `https://www.youtube.com/embed/${videoIdMatch[1]}`;
-                }
+            // Regex to identify YouTube Video ID from various URL formats
+            // Covers: youtu.be, embed, watch?v=, and shorts
+            const youtubeRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(youtubeRegex);
+
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}`;
             }
 
-            // 3. If it's already an embed link (youtube.com/embed/) or another URL (like Google Drive), return it as is
-            // Note: We strip any extra parameters after the video ID for cleaner embedding
-            if (url.includes('youtube.com/embed/')) {
-                const parts = url.split('?')[0];
-                return parts;
-            }
-            
-            // If it's a direct video link (like Google Drive .mp4), return it so it uses the standard <video> tag
+            // Return original URL if it's not a recognized YouTube format (e.g., .mp4 file)
             return url;
         }
 
+        // Security: Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return text;
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         async function fetchData() {
             DOMElements.indicators.loading.classList.remove('hidden');
@@ -490,8 +489,8 @@
                     if (!teacherObj.subjects.has(subjectName)) {
                         teacherObj.subjects.set(subjectName, { name: subjectName, lectures: [] });
                     }
-                    lecture.videoUrl = lecture.videoUrl || ''; // Ensure videoUrl exists
-                    lecture.videoUrlUrdu = lecture.videoUrlUrdu || ''; // Ensure videoUrlUrdu exists
+                    lecture.videoUrl = lecture.videoUrl || '';
+                    lecture.videoUrlUrdu = lecture.videoUrlUrdu || '';
                     teacherObj.subjects.get(subjectName).lectures.push({ ...lecture, number: parseInt(lecture.number) || 0 });
                 }
             });
@@ -525,7 +524,7 @@
             const container = DOMElements.containers.classes;
             container.innerHTML = state.portalData.map(cls => `
                 <div class="card-hover card-class p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500 class-card-min-h" data-id="${cls.id}">
-                    <div><h3 class="text-white text-xl font-semibold mb-2">${cls.name}</h3><p class="text-slate-300 text-sm">${cls.teachers.length} Teachers</p></div>
+                    <div><h3 class="text-white text-xl font-semibold mb-2">${escapeHtml(cls.name)}</h3><p class="text-slate-300 text-sm">${cls.teachers.length} Teachers</p></div>
                     <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Teachers</button>
                 </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No classes available.</p>';
             showSection('classes');
@@ -537,8 +536,8 @@
             const container = DOMElements.containers.teachers;
             container.innerHTML = cls.teachers.map(t => `
                 <div class="card-hover card-teacher p-6 rounded-xl shadow-md flex flex-col items-center text-center border border-slate-500 teacher-card-min-h" data-id="${t.id}" id="teacher-card-${t.id}">
-                    <img src="${t.picture}" alt="${t.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400" onerror="this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A'">
-                    <h3 class="text-white text-xl font-semibold mb-1">${t.name}</h3><p class="text-slate-300 text-sm">${t.subjects.length} Subjects</p>
+                    <img src="${t.picture}" alt="${escapeHtml(t.name)}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-amber-400" onerror="this.src='https://placehold.co/100x100/475569/cbd5e1?text=N/A'">
+                    <h3 class="text-white text-xl font-semibold mb-1">${escapeHtml(t.name)}</h3><p class="text-slate-300 text-sm">${t.subjects.length} Subjects</p>
                     <div class="mt-4 flex gap-2 w-full">
                         <button class="flex-1 bg-amber-500 text-white px-3 py-2 rounded-lg font-semibold hover:bg-amber-600 transition view-subjects-btn">View Subjects</button>
                         <button class="flex-1 bg-blue-500 text-white px-3 py-2 rounded-lg font-semibold hover:bg-blue-600 transition view-bio-btn">Bio</button>
@@ -552,8 +551,8 @@
             DOMElements.labels.teacherNameForSubjects.textContent = teacher.name;
             const container = DOMElements.containers.subjects;
             container.innerHTML = teacher.subjects.map(s => `
-                <div class="card-hover card-subject p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500 subject-card-min-h" data-id="${s.name}">
-                    <div><h3 class="text-white text-xl font-semibold mb-2">${s.name}</h3><p class="text-slate-300 text-sm">${s.lectures.length} Lectures</p></div>
+                <div class="card-hover card-subject p-6 rounded-xl shadow-md flex flex-col justify-between border border-slate-500 subject-card-min-h" data-id="${escapeHtml(s.name)}">
+                    <div><h3 class="text-white text-xl font-semibold mb-2">${escapeHtml(s.name)}</h3><p class="text-slate-300 text-sm">${s.lectures.length} Lectures</p></div>
                     <button class="mt-4 bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">View Lectures</button>
                 </div>`).join('') || '<p class="text-slate-300 text-center col-span-full py-8 text-lg">No subjects for this teacher.</p>';
             showSection('subjects');
@@ -592,7 +591,7 @@
                             <path d="M12 14.5c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5z"></path>
                         </svg>
                         <div>
-                            <h3 class="text-white text-lg font-semibold">${l.title}</h3>
+                            <h3 class="text-white text-lg font-semibold">${escapeHtml(l.title)}</h3>
                             <p class="text-slate-300 text-sm">Lecture ${l.number}</p>
                         </div>
                     </div>
@@ -608,7 +607,7 @@
             section.classList.add('section-fade-in');
             section.onanimationend = () => section.classList.remove('section-fade-in');
             
-            hideModal(true); // Hide modal immediately
+            hideModal(true);
             if (sectionName !== 'lectures') DOMElements.search.input.value = '';
             updateBreadcrumbs();
         }
@@ -616,12 +615,10 @@
         function updateBreadcrumbs() {
             const { home, class: cls, teacher, subject } = DOMElements.breadcrumbs;
 
-            // Reset all breadcrumbs first by removing the active class
             [home, cls.querySelector('span:last-child'), teacher.querySelector('span:last-child'), subject.querySelector('span:last-child')].forEach(el => {
                 el.classList.remove('active-breadcrumb');
             });
             
-            // Set visibility
             cls.classList.toggle('hidden', !state.currentClass);
             if (state.currentClass) cls.querySelector('span:last-child').textContent = state.currentClass.name;
             
@@ -631,7 +628,6 @@
             subject.classList.toggle('hidden', !state.currentSubject);
             if (state.currentSubject) subject.querySelector('span:last-child').textContent = state.currentSubject.name;
 
-            // Set the active breadcrumb based on the current state
             if (state.currentSubject) {
                 subject.querySelector('span:last-child').classList.add('active-breadcrumb');
             } else if (state.currentTeacher) {
@@ -648,9 +644,8 @@
             const l = state.currentLecture;
             const isUrdu = lang === 'urdu';
             
-            // Determine URLs and automatically convert YouTube links to embed format
             const videoUrlRaw = isUrdu ? l.videoUrlUrdu || l.videoUrl : l.videoUrl;
-            const normalizedVideoUrl = getEmbedUrl(videoUrlRaw); // Use the helper function
+            const normalizedVideoUrl = getEmbedUrl(videoUrlRaw);
 
             const contentUrl = isUrdu ? l.contentUrlUrdu || l.contentUrl : l.contentUrl;
             const downloadUrl = isUrdu ? l.downloadUrlUrdu || l.downloadUrl : l.downloadUrl;
@@ -665,54 +660,41 @@
             audioPlayer.pause();
             audioContainer.classList.toggle('hidden', !audioUrl);
 
-            // 2. Handle Video/YouTube Player (FIXED LOGIC)
+            // 2. Handle Video/YouTube Player
             if (normalizedVideoUrl) {
-                // Determine if it's a YouTube embed (we check this AFTER normalization)
                 const isYouTube = normalizedVideoUrl.includes('youtube.com/embed');
                 
                 if (isYouTube) {
-                    // Inject iframe for YouTube
                     videoContainer.innerHTML = `
-                        <p class="text-slate-300 mb-2 font-semibold">Lecture Video (YouTube):</p>
-                        <!-- Responsive iframe container -->
-                        <div class="relative w-full" style="padding-top: 56.25%;">
-                            <iframe 
-                                class="absolute top-0 left-0 w-full h-full rounded-lg shadow-xl"
-                                src="${normalizedVideoUrl}" 
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen
-                                loading="lazy"
-                            ></iframe>
-                        </div>
+                        <p class="text-slate-300 mb-2 font-semibold px-2 pt-2">Lecture Video (YouTube):</p>
+                        <iframe 
+                            class="absolute top-0 left-0 w-full h-full"
+                            src="${normalizedVideoUrl}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen
+                            loading="lazy"
+                        ></iframe>
                     `;
+                    DOMElements.modal.videoPlayer = null;
                 } else {
-                    // Inject native <video> tag for direct video files (Google Drive, .mp4, etc.)
                     videoContainer.innerHTML = `
-                        <p class="text-slate-300 mb-2 font-semibold">Lecture Video (Direct Media):</p>
-                        <video id="lecture-video-player-native" controls preload="metadata" class="w-full h-auto"></video>
+                        <p class="text-slate-300 mb-2 font-semibold px-2 pt-2">Lecture Video (Direct Media):</p>
+                        <video id="lecture-video-player-native" controls preload="metadata" class="w-full h-full absolute top-0 left-0 object-contain bg-black"></video>
                     `;
                     const nativePlayer = document.getElementById('lecture-video-player-native');
                     if (nativePlayer) {
                         nativePlayer.src = normalizedVideoUrl;
-                        // For direct media, we reassign the videoPlayer reference for pausing logic
                         DOMElements.modal.videoPlayer = nativePlayer; 
                     }
                 }
-
-                // Show the video container
                 videoContainer.classList.remove('hidden');
-                // Ensure DOMElements.modal.videoPlayer is null if using iframe, or the native element if using video tag
-                DOMElements.modal.videoPlayer = isYouTube ? null : document.getElementById('lecture-video-player-native');
-
             } else {
-                // Hide video section if no URL is present
                 if(DOMElements.modal.videoPlayer) DOMElements.modal.videoPlayer.pause();
                 videoContainer.classList.add('hidden');
-                videoContainer.innerHTML = ''; // Clear content when hidden
+                videoContainer.innerHTML = '';
                 DOMElements.modal.videoPlayer = null;
             }
-
 
             // 3. Update Links and Styles
             const viewLink = DOMElements.modal.viewLink;
@@ -740,14 +722,11 @@
             setTimeout(() => {
                 const modalContent = DOMElements.modal.content;
                 modalContent.classList.remove('scale-95', 'opacity-0');
-                // Scroll the modal into view smoothly
-                modalContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 10);
         }
 
         function hideModal(immediate = false) {
             DOMElements.modal.audioPlayer.pause();
-            // Pause video player if it exists (only for native <video> tag)
             if (DOMElements.modal.videoPlayer) DOMElements.modal.videoPlayer.pause();
             
             const modalContent = DOMElements.modal.content;
@@ -776,9 +755,9 @@
             const phone = teacher.phone ? `Phone: ${teacher.phone}` : '';
             
             DOMElements.bioModal.details.innerHTML = `
-                <p class="mb-2">${bioText}</p>
-                <p class="font-semibold">${email}</p>
-                <p class="font-semibold">${phone}</p>
+                <p class="mb-2">${escapeHtml(bioText)}</p>
+                <p class="font-semibold">${escapeHtml(email)}</p>
+                <p class="font-semibold">${escapeHtml(phone)}</p>
             `;
 
             DOMElements.bioModal.main.classList.remove('hidden');
@@ -801,7 +780,7 @@
         }
 
         function setupEventListeners() {
-            // Event Delegation for all containers
+            // Event Delegation
             Object.values(DOMElements.containers).forEach(container => {
                 container.addEventListener('click', (e) => {
                     const button = e.target.closest('button');
@@ -821,11 +800,10 @@
                                 if (teacher) renderSubjects(teacher);
                             } else if (button.classList.contains('view-bio-btn')) {
                                 if (teacher) {
-                                    // Scroll to the card before showing the modal
                                     const teacherCard = document.getElementById(`teacher-card-${teacher.id}`);
                                     if(teacherCard) {
                                         teacherCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        setTimeout(() => showBioModal(teacher), 500); // Small delay for scrolling
+                                        setTimeout(() => showBioModal(teacher), 500);
                                     } else {
                                         showBioModal(teacher);
                                     }
@@ -847,7 +825,8 @@
             // Modal
             DOMElements.modal.closeBtn.addEventListener('click', () => hideModal());
             DOMElements.modal.main.addEventListener('click', (e) => { 
-                if (e.target === DOMElements.modal.main) hideModal();
+                // Close if clicking the backdrop (wrapper)
+                if (e.target.classList.contains('modal-scroll-wrapper')) hideModal();
             });
             DOMElements.modal.langEnglishBtn.addEventListener('click', () => updateModalContent('english'));
             DOMElements.modal.langUrduBtn.addEventListener('click', () => updateModalContent('urdu'));
@@ -855,7 +834,8 @@
             // Bio Modal
             DOMElements.bioModal.closeBtn.addEventListener('click', () => hideBioModal());
             DOMElements.bioModal.main.addEventListener('click', (e) => {
-                if (e.target === DOMElements.modal.main) hideBioModal();
+                // Fix: Check against bioModal.main
+                if (e.target === DOMElements.bioModal.main) hideBioModal();
             });
 
             // Search
@@ -875,7 +855,7 @@
                 const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
                 applyTheme(newTheme);
-            });GOOGLE_APPS_SCRIPT_URL
+            });
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
